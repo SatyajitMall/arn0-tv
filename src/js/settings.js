@@ -111,7 +111,7 @@
             { label: 'Background', value: wallpaperSummary(), run: function () { UI.show('bg'); } },
             { label: 'Apps on Home', value: Home.homeItems().length + ' apps', run: function () { UI.show('homeapps'); } },
             { label: 'Consoles', value: shown + ' on Home', run: function () { UI.show('consoles'); } },
-            { label: 'Appearance', value: Appearance.font(a.font).label + ' · ' + (a.clock === '12h' ? '12-hour' : '24-hour'), run: function () { UI.show('appearance'); } },
+            { label: 'Appearance', value: Gotham.theme(a.theme).label + ' · ' + Appearance.font(a.font).label + ' · ' + (a.clock === '12h' ? '12-hour' : '24-hour'), run: function () { UI.show('appearance'); } },
             { label: 'Navigation sound', value: soundSummary(), run: function () { UI.show('sound-settings'); } },
             { label: 'Screen saver', value: screensaverSummary(), run: function () { UI.show('screensaver-settings'); } },
             { label: 'Samsung Home', value: 'Smart Hub and TV settings', run: openSamsungHome },
@@ -191,13 +191,20 @@
     // ---------- Appearance
 
     function appearanceBlocks() {
-        return [
+        var blocks = [
+            { title: 'Theme', key: 'theme', options: Gotham.THEMES.map(function (t) { return [t.key, t.label]; }) }
+        ];
+        if (Prefs.get().appearance.theme === 'gotham') {
+            blocks.push({ title: 'Effects', key: 'effects', options: Gotham.EFFECTS.map(function (e) { return [e.key, e.label]; }) });
+        }
+        return blocks.concat([
+            { title: 'Apps', key: 'apps', options: [['dock', 'Dock'], ['tiles', 'Tiles']] },
             { title: 'Clock', key: 'clock', options: [['24h', '24-hour'], ['12h', '12-hour']] },
             { title: 'Date', key: 'showDate', options: [[true, 'Show'], [false, 'Hide']] },
             { title: 'Date language', key: 'locale', options: Appearance.LOCALES.map(function (l) { return [l.key, l.label]; }) },
             { title: 'Font', key: 'font', options: Appearance.FONTS.map(function (f) { return [f.key, f.label, f.family]; }) },
             { title: 'App names', key: 'names', options: [['always', 'Always'], ['focused', 'When selected'], ['never', 'Never']] }
-        ];
+        ]);
     }
 
     function renderAppearance() {
@@ -220,8 +227,16 @@
 
     function activateAppearance(item) {
         Prefs.get().appearance[item.key] = item.value;
+        // Picking Gotham also picks its wallpaper; Background can still change it afterwards.
+        if (item.key === 'theme' && item.value === 'gotham') {
+            var w = Prefs.get().wallpaper;
+            w.mode = 'photo';
+            w.photo = Gotham.WALLPAPER;
+            Wallpaper.apply();
+        }
         Prefs.save();
         Appearance.apply();
+        if (item.key === 'apps') Home.render();
         Home.updateClock();
         renderAppearance();
         UI.refresh();

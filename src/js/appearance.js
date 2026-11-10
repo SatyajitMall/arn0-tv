@@ -50,6 +50,7 @@
         home.classList.toggle('names-focused', p.names === 'focused');
         home.classList.toggle('names-never', p.names === 'never');
         home.classList.toggle('no-date', !p.showDate);
+        Gotham.apply(p.theme, p.effects);
     }
 
     window.Appearance = {

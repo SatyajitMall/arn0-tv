@@ -13,7 +13,7 @@
 (function () {
     'use strict';
 
-    var STORE_KEY = 'arn0.weather.v1';
+    var STORE_KEY = 'arn0.weather.v2';   // v2: one reading per place
     var ENDPOINT = 'https://api.open-meteo.com/v1/forecast';
     var FRESH_MS = 60 * 60 * 1000;          // inside the hour, the cached reading will do
     var USABLE_MS = 3 * 60 * 60 * 1000;     // older than this counts as no reading at all
@@ -85,9 +85,16 @@
         return (window.LAUNCHER_CONFIG && window.LAUNCHER_CONFIG.weather) || {};
     }
 
-    function configured() {
+    // weather.places: [{ name, latitude, longitude }, ...], or the original single
+    // weather.latitude / weather.longitude. The first place is the screen saver's.
+    function places() {
         var c = cfg();
-        return typeof c.latitude === 'number' && typeof c.longitude === 'number';
+        var list = Array.isArray(c.places) ? c.places : [{ name: '', latitude: c.latitude, longitude: c.longitude }];
+        return list.filter(function (p) { return typeof p.latitude === 'number' && typeof p.longitude === 'number'; });
+    }
+
+    function configured() {
+        return places().length > 0;
     }
 
     // ---------- Cache
@@ -121,42 +128,67 @@
      * A stale reading is worse than none: an unattended screen showing yesterday's temperature as
      * if it were now is a confidently wrong answer, so past USABLE_MS the widget simply hides.
      */
-    function current() {
-        if (!configured() || !reading || age() > USABLE_MS) return null;
+    function describe(r, place) {
         var locale = Prefs.get().appearance.locale;
         var labels = LABELS[locale] || LABELS['en-GB'];
-        var name = group(reading.code);
+        var name = group(r.code);
         return {
-            temp: Math.round(reading.temp) + '°',
-            detail: labels[name] + ' · ' + Math.round(reading.max) + '° / ' + Math.round(reading.min) + '°',
+            place: place ? place.name : '',
+            temp: Math.round(r.temp) + '°',
+            label: labels[name],
+            detail: labels[name] + ' · ' + Math.round(r.max) + '° / ' + Math.round(r.min) + '°',
             icon: icon(name)
         };
+    }
+
+    function usable() {
+        return configured() && reading && Array.isArray(reading.list) && age() <= USABLE_MS;
+    }
+
+    // The first place (screen saver corner).
+    function current() {
+        if (!usable() || !reading.list[0]) return null;
+        return describe(reading.list[0], places()[0]);
+    }
+
+    // Every place with a reading (Home, next to the clock).
+    function all() {
+        if (!usable()) return [];
+        var p = places();
+        return reading.list.map(function (r, i) { return r && describe(r, p[i]); }).filter(Boolean);
     }
 
     // ---------- Fetching
 
     function url() {
         var c = cfg();
+        var p = places();
+        // Open-Meteo takes comma-separated coordinates and answers with one result per place.
         return ENDPOINT +
-            '?latitude=' + encodeURIComponent(c.latitude) +
-            '&longitude=' + encodeURIComponent(c.longitude) +
+            '?latitude=' + p.map(function (x) { return encodeURIComponent(x.latitude); }).join(',') +
+            '&longitude=' + p.map(function (x) { return encodeURIComponent(x.longitude); }).join(',') +
             '&current=temperature_2m,weather_code' +
             '&daily=temperature_2m_max,temperature_2m_min' +
             (c.unit === 'fahrenheit' ? '&temperature_unit=fahrenheit' : '') +
             '&timezone=auto';
     }
 
-    function accept(data) {
+    function one(data) {
         var now = data && data.current;
         var day = data && data.daily;
-        if (!now || !day || typeof now.temperature_2m !== 'number') return false;
-        reading = {
-            at: Date.now(),
+        if (!now || !day || typeof now.temperature_2m !== 'number') return null;
+        return {
             temp: now.temperature_2m,
             code: typeof now.weather_code === 'number' ? now.weather_code : 3,
             max: day.temperature_2m_max[0],
             min: day.temperature_2m_min[0]
         };
+    }
+
+    function accept(data) {
+        var list = (Array.isArray(data) ? data : [data]).map(one);
+        if (!list.length || !list[0]) return false;
+        reading = { at: Date.now(), list: list };
         store();
         listeners.forEach(function (fn) { fn(); });
         return true;
@@ -206,7 +238,7 @@
     function start() {
         load();
         if (!configured()) {
-            DevLog.log('Weather off: set weather.latitude and weather.longitude in js/config.js');
+            DevLog.log('Weather off: set weather.places (or latitude/longitude) in js/config.js');
             return;
         }
         refresh();
@@ -216,6 +248,7 @@
         start: start,
         refresh: refresh,
         current: current,
+        all: all,
         configured: configured,
         // Exposed so Home can reuse the same marks if weather ever moves there too.
         icon: icon,

@@ -33,7 +33,10 @@
                 showDate: true,
                 locale: cfg.locale || 'en-GB',
                 font: 'manrope',        // see Appearance.FONTS
-                names: 'always'         // app names under tiles: 'always' | 'focused' | 'never'
+                names: 'always',        // app names under tiles: 'always' | 'focused' | 'never'
+                theme: theme.style || 'classic',   // see Gotham.THEMES
+                apps: theme.apps || 'tiles',        // apps row: 'tiles' | 'dock'
+                effects: 'searchlight'  // Gotham only, see Gotham.EFFECTS
             },
             home: null,                 // [{ id, label, brand }] once edited; null = config.js apps
             inputs: null                // [{ hdmi, label, brand, method, hidden }] once edited; null = config.js

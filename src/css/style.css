@@ -1019,3 +1019,450 @@ html.preview, html.preview body {
     opacity: 0;
     transition: opacity 10000ms linear;
 }
+
+/* ---------- Gotham theme (js/gotham.js, art from scripts/make-gotham.mjs) ----------
+ * Same rules as the rest of this file: no live gradients, only transform/opacity animate.
+ * The glows are images; soft box-shadows are allowed (measured free on the Q70B). */
+
+.theme-gotham {
+    --bg: #05070b;
+    --fg: #eceef2;
+    --muted: rgba(205, 212, 224, 0.6);
+    --faint: rgba(205, 212, 224, 0.55);
+    --ring: #ffd34d;
+    --gx-amber: #ffd34d;
+}
+
+.theme-gotham #time {
+    color: var(--gx-amber);
+    font-weight: 200;
+    text-shadow: 0 0 40px rgba(255, 211, 77, 0.25);
+}
+
+.theme-gotham #date {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 26px;
+}
+
+.theme-gotham .shelf h2 {
+    color: rgba(255, 211, 77, 0.75);
+    letter-spacing: 0.3em;
+}
+
+.theme-gotham .app .label {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 22px;
+}
+
+.theme-gotham .app.focused .label { color: var(--gx-amber); }
+
+.theme-gotham .app.focused .tile,
+.theme-gotham .input.focused .tile {
+    box-shadow: 0 0 0 4px var(--ring), 0 0 40px rgba(255, 211, 77, 0.35), 0 30px 80px rgba(0, 0, 0, 0.7);
+}
+
+.theme-gotham .page { background: rgba(5, 7, 11, 0.86); }
+.theme-gotham .page-head h1 { text-transform: uppercase; letter-spacing: 0.08em; }
+.theme-gotham .chip.on { border-color: var(--gx-amber); }
+
+/* Effects layer: sits between #bg and the views */
+#gotham-fx { display: none; }
+.theme-gotham #gotham-fx {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Beam pivots on the spire at (1305, 530) of the baked skyline. */
+.gx-beam {
+    position: absolute;
+    left: 1005px;
+    top: -30px;
+    width: 600px;
+    height: 560px;
+    transform-origin: 50% 100%;
+    transform: rotate(-4deg);
+    will-change: transform;
+}
+
+.gx-beacon {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ff3b30;
+    box-shadow: 0 0 10px 3px rgba(255, 59, 48, 0.55);
+    will-change: opacity;
+}
+
+.gx-flash {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+    opacity: 0;
+    will-change: opacity;
+}
+
+.gx-rain {
+    display: none;
+    position: absolute;
+    top: -240px;
+    left: 0;
+    width: 1920px;
+    height: 1320px;
+    opacity: 0.55;
+    background: url("../img/gotham/rain.svg") repeat;
+    will-change: transform;
+}
+
+.gx-searchlight .gx-beam,
+.gx-storm .gx-beam { animation: gx-sweep 20s ease-in-out infinite alternate; }
+
+.gx-searchlight .gx-beacon,
+.gx-storm .gx-beacon { animation: gx-blink 2.6s steps(1) infinite; }
+.gx-b1 { animation-delay: -0.9s !important; }
+.gx-b2 { animation-delay: -1.7s !important; }
+.gx-b3 { animation-delay: -0.4s !important; }
+
+.gx-storm .gx-flash { display: block; animation: gx-lightning 13s linear infinite; }
+.gx-storm .gx-rain { display: block; animation: gx-fall 0.6s linear infinite; }
+
+/* Pause everything when Home is not on screen (Settings, apps, screen saver, game). */
+html:not([data-view="home"]) #gotham-fx * { animation-play-state: paused; }
+
+@keyframes gx-sweep {
+    from { transform: rotate(-7deg); }
+    to { transform: rotate(-1deg); }
+}
+
+@keyframes gx-blink {
+    0% { opacity: 1; }
+    55% { opacity: 0.12; }
+}
+
+@keyframes gx-lightning {
+    0%, 88%, 100% { opacity: 0; }
+    88.6% { opacity: 0.6; }
+    89.3% { opacity: 0.08; }
+    90.4% { opacity: 0.45; }
+    92% { opacity: 0; }
+}
+
+@keyframes gx-fall {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(0, 240px, 0); }
+}
+
+/* ---------- Mood cards (js/moods.js) ----------
+ * Only transform/opacity animate: the top card flying away and the reel track. Deck depth uses
+ * static transforms, never animated scale (which this engine re-rasterises in steps). */
+
+.mood-entry .tile {
+    background: #161b24;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+}
+.theme-gotham .mood-entry .tile { border-color: rgba(255, 211, 77, 0.35); background: #0d1118; }
+
+.mood-entry-cards {
+    position: relative;
+    flex: none;
+    width: 80px;
+    height: 100px;
+    margin-right: 34px;
+}
+.mood-entry-cards::before,
+.mood-entry-cards::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 10px;
+    width: 64px;
+    height: 96px;
+    border-radius: 10px;
+    border: 3px solid var(--ring);
+    background: rgba(255, 255, 255, 0.06);
+}
+.mood-entry-cards::before { transform: rotate(-12deg) translateX(-10px); opacity: 0.5; }
+.mood-entry-cards::after { transform: rotate(8deg) translateX(10px); }
+
+#mood-progress { color: var(--muted); }
+
+#mood-deck-wrap {
+    position: absolute;
+    top: 250px;
+    left: 0;
+    right: 0;
+    height: 720px;
+}
+
+#mood-deck {
+    position: absolute;
+    top: 0;
+    left: 690px;
+    width: 540px;
+    height: 680px;
+}
+
+.mood-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 540px;
+    height: 640px;
+    box-sizing: border-box;
+    padding: 64px 56px;
+    border-radius: 34px;
+    border: 3px solid #fff;
+    background: #12161e;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+    will-change: transform, opacity;
+    transition: transform 0.32s ease-in, opacity 0.32s ease-in;
+}
+.mood-card.pos0 { z-index: 3; }
+.mood-card.pos1 { z-index: 2; transform: translate3d(0, 22px, 0) scale(0.95); opacity: 0.55; }
+.mood-card.pos2 { z-index: 1; transform: translate3d(0, 44px, 0) scale(0.9); opacity: 0.25; }
+.mood-card.fly-left { transform: translate3d(-900px, 60px, 0) rotate(-18deg); opacity: 0; }
+.mood-card.fly-right { transform: translate3d(900px, 60px, 0) rotate(18deg); opacity: 0; }
+
+.mood-kicker {
+    font-size: 24px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.mood-name {
+    margin-top: 150px;
+    font-size: 76px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -1px;
+}
+.mood-line {
+    margin-top: 28px;
+    font-size: 32px;
+    color: var(--fg);
+    opacity: 0.8;
+}
+.mood-count {
+    position: absolute;
+    left: 56px;
+    bottom: 56px;
+    font-size: 26px;
+    color: var(--muted);
+}
+.mood-empty { font-size: 34px; color: var(--muted); width: 700px; }
+
+.mood-side {
+    position: absolute;
+    top: 290px;
+    font-size: 34px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.mood-nope { left: 330px; }
+.mood-yes { right: 330px; color: var(--ring); }
+
+/* Reel: a 3-row window, no rounded clipping (kept out of the compositor's hard path). */
+#mood-reel {
+    position: absolute;
+    top: 240px;
+    left: 0;
+    right: 0;
+}
+.mood-reel-mood {
+    text-align: center;
+    font-size: 30px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+}
+.reel-window {
+    position: relative;
+    width: 1000px;
+    height: 450px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+.reel-track { will-change: transform; }
+.reel-item {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 56px;
+    box-sizing: border-box;
+    font-size: 54px;
+    font-weight: 700;
+    color: rgba(244, 245, 247, 0.4);
+}
+.reel-app { font-size: 26px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
+.reel-frame {
+    position: absolute;
+    top: 150px;
+    left: 0;
+    right: 0;
+    height: 150px;
+    border-top: 3px solid var(--ring);
+    border-bottom: 3px solid var(--ring);
+    pointer-events: none;
+}
+.reel-window::before,
+.reel-window::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 150px;
+    z-index: 1;
+    background: rgba(9, 11, 16, 0.72);
+    pointer-events: none;
+}
+.reel-window::before { top: 0; }
+.reel-window::after { bottom: 0; }
+
+/* Pick */
+#mood-pick {
+    position: absolute;
+    top: 250px;
+    left: 360px;
+    right: 200px;
+    display: flex;
+    align-items: center;
+}
+.poster {
+    position: relative;
+    width: 400px;
+    height: 600px;
+    flex: none;
+    border-radius: 26px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.65), 0 0 0 4px var(--ring);
+}
+.poster-title {
+    position: absolute;
+    left: 34px;
+    right: 34px;
+    bottom: 110px;
+    font-size: 54px;
+    font-weight: 800;
+    line-height: 1.05;
+    color: #fff;
+}
+.poster.has-image .poster-title { display: none; }
+.poster-app {
+    position: absolute;
+    left: 34px;
+    bottom: 40px;
+    padding: 6px 16px;
+    border: 2px solid #fff;
+    border-radius: 10px;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+}
+.mood-pick-meta { margin-left: 80px; }
+.mood-pick-title { margin-top: 18px; font-size: 88px; font-weight: 800; letter-spacing: -2px; line-height: 1; }
+.mood-pick-app { margin-top: 22px; font-size: 34px; color: var(--muted); }
+.mood-pick-count { margin-top: 60px; font-size: 34px; color: var(--ring); }
+
+.theme-gotham .mood-card { background: #0b0f16; }
+.theme-gotham .mood-name { text-transform: uppercase; letter-spacing: 2px; font-size: 64px; }
+#mood-pick.hidden, #mood-reel.hidden, #mood-deck-wrap.hidden { display: none; }
+
+/* ---------- Dock style for the apps row (Settings > Appearance > Apps) ----------
+ * White logos on the wallpaper, no tiles or rings. Focus: the logo grows, a light in the brand's
+ * colour fades in behind it (box-shadow: measured free; only opacity animates), its name appears
+ * under it and a short line above. */
+
+#home.apps-dock .app { width: 230px; margin-right: 44px; }
+#home.apps-dock .tile,
+#home.apps-dock .all-tile { background: transparent !important; box-shadow: none; }
+#home.apps-dock .app.focused .tile { transform: scale(1.2); box-shadow: none; }
+#home.apps-dock .app .label { visibility: hidden; text-align: center; }
+#home.apps-dock .app.focused .label { visibility: visible; }
+#home.apps-dock .all-tile svg { opacity: 0.75; }
+#home.apps-dock .app.focused .all-tile svg { opacity: 1; }
+
+.dock-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 36px;
+    height: 18px;
+    margin: -9px 0 0 -18px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+    will-change: opacity;
+}
+.app.focused .dock-glow { opacity: 0.42; }
+
+.dock-mark {
+    position: absolute;
+    top: 26%;
+    left: 24%;
+    width: 52%;
+    height: 48%;
+    object-fit: contain;
+    opacity: 0.78;
+}
+.app.focused .dock-mark,
+.app.focused .dock-word { opacity: 1; }
+
+.dock-word {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+    opacity: 0.78;
+    white-space: nowrap;
+}
+
+.dock-line {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    font-size: 26px;
+    font-style: italic;
+    color: var(--ring);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+    will-change: transform, opacity;
+}
+.dock-line.visible { opacity: 0.9; }
+/* The line takes the heading's place above the dock. */
+#home.apps-dock #apps-section h2 { visibility: hidden; }
+
+/* ---------- Weather next to the Home clock ---------- */
+.home-weather { margin-top: 18px; font-size: 28px; color: var(--muted); white-space: nowrap; }
+.hw-item { display: inline-block; margin-right: 36px; vertical-align: middle; }
+.hw-icon { display: inline-block; width: 34px; height: 36px; margin-right: 10px; vertical-align: -8px; color: var(--fg); }
+.hw-icon svg { width: 34px; height: 36px; }
+.hw-temp { color: var(--fg); font-weight: 600; margin-right: 10px; }
+.hw-place { letter-spacing: 0.08em; }
+.theme-gotham .hw-place { text-transform: uppercase; font-size: 22px; letter-spacing: 0.18em; }
+.theme-gotham .hw-icon { color: var(--gx-amber); }
+.no-date .home-weather { margin-top: 14px; }

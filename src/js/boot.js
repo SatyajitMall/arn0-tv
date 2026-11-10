@@ -14,6 +14,7 @@
 
     UI.init();
     Settings.init();
+    Moods.init();
     Screensaver.init();
     Weather.start();
     Home.init();

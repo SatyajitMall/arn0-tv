@@ -84,6 +84,8 @@
         if (!opts.back && !def.overlay && current && current !== name) def.from = current;
         if (def.overlay) def.from = current;
         current = name;
+        // Lets CSS pause decorative animation off Home (see the Gotham theme in style.css).
+        if (!def.overlay) document.documentElement.setAttribute('data-view', name);
         Object.keys(views).forEach(function (n) {
             var v = views[n];
             if (!v.el) return;

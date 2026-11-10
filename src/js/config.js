@@ -38,9 +38,13 @@ window.LAUNCHER_CONFIG = {
     locale: 'en-GB',
 
     theme: {
+        // Starting look: 'classic' or 'gotham' (js/gotham.js). Changed from Settings → Appearance.
+        style: 'gotham',
+        // Apps row: 'dock' (white logos on the wallpaper) or 'tiles' (coloured tiles).
+        apps: 'dock',
         // Starting wallpaper (key from js/wallpapers.js), or null for none (plain gradient).
         // Changed from Settings → Background; the TV remembers the choice.
-        wallpaper: null
+        wallpaper: 'gotham'
     },
 
     /*
@@ -53,6 +57,8 @@ window.LAUNCHER_CONFIG = {
      * not something you type with a remote.
      */
     weather: {
+        // One or more places: places: [{ name: 'Home', latitude: 12.97, longitude: 77.59 }].
+        // The first one is shown in the screen saver; all of them next to the clock on Home.
         latitude: null,
         longitude: null,
         unit: 'celsius'         // 'celsius' | 'fahrenheit'

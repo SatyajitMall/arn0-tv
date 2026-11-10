@@ -9,6 +9,7 @@ const sandbox = { window: {} };
 vm.runInNewContext(await readFile(resolve(src, 'js/brands.js'), 'utf8'), sandbox);
 
 await mkdir(resolve(src, 'img/tiles'), { recursive: true });
+await mkdir(resolve(src, 'img/dock'), { recursive: true });
 for (const brand of sandbox.window.BRANDS) {
     if (!brand.mark) continue;
     const svg = await readFile(resolve(src, 'img/marks', brand.mark + '.svg'), 'utf8');
@@ -17,5 +18,7 @@ for (const brand of sandbox.window.BRANDS) {
         .replace(/\sfill="[^"]*"/g, '')
         .replace(/<svg\b/, `<svg fill="${brand.fg}"`);
     await writeFile(resolve(src, 'img/tiles', brand.key + '.svg'), coloured);
+    // White copy for the Dock style (logos floating on the wallpaper, no tile).
+    await writeFile(resolve(src, 'img/dock', brand.key + '.svg'), coloured.replace(`fill="${brand.fg}"`, 'fill="#fff"'));
 }
-console.log('Wrote coloured marks to src/img/tiles/');
+console.log('Wrote coloured marks to src/img/tiles/ and white marks to src/img/dock/');

@@ -72,6 +72,24 @@ TV work is different in kind: it needs a machine on the same network as the TV, 
 can only read this repo cannot operate the TV. This repository includes the guarded helper source,
 but does not include a ready-to-run SDB staging/runner script or a per-TV recovery snapshot.
 
+
+## Gotham theme (this fork)
+
+Settings → Appearance → **Theme: Gotham** gives an amber-on-black skin over an original
+night-city wallpaper, with a searchlight projecting a bat shape into the clouds. Settings →
+Appearance → **Effects** picks how much moves:
+
+| Effects | What moves | Cost |
+| --- | --- | --- |
+| Still | nothing | none beyond the wallpaper |
+| Searchlight (default) | beam sweeps, rooftop lights blink | one 600x560 image rotating + 4 dots |
+| Storm | searchlight + rain + lightning | adds a full-screen translucent layer: check by eye |
+
+All glows are pre-rendered images (no live gradients, per the render-probe numbers above), only
+`transform`/`opacity` animate, and everything pauses when Home is not on screen. Regenerate the
+art with `node scripts/make-gotham.mjs` (headless Chrome, macOS). Code: `src/js/gotham.js`,
+the Gotham block at the end of `src/css/style.css`.
+
 ## Put it on a TV
 
 **[docs/setup-tv.md](docs/setup-tv.md)** — installing the package, then optionally the Home button

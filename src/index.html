@@ -14,6 +14,7 @@
             <header class="clock">
                 <div id="time"><span id="time-main"></span><span id="time-suffix"></span></div>
                 <div id="date"></div>
+                <div id="home-weather" class="home-weather"></div>
             </header>
             <div id="gear" class="gear">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -23,10 +24,11 @@
             </div>
             <div id="apps-section" class="shelf">
                 <h2>Apps</h2>
+                <div id="dock-line" class="dock-line"></div>
                 <div class="row-viewport"><div id="apps-row" class="row-track"></div></div>
             </div>
             <div id="inputs-section" class="shelf">
-                <h2>Consoles</h2>
+                <h2 id="inputs-title">Consoles</h2>
                 <div class="row-viewport"><div id="inputs-row" class="row-track"></div></div>
             </div>
         </section>
@@ -105,6 +107,34 @@
             <pre id="lab-log" class="lab-log"></pre>
         </section>
 
+        <section id="moods" class="view page hidden">
+            <header class="page-head">
+                <h1>Don’t have time to browse?</h1>
+                <div id="mood-progress"></div>
+            </header>
+            <div id="mood-deck-wrap">
+                <div class="mood-side mood-nope">◀ nope</div>
+                <div id="mood-deck"></div>
+                <div class="mood-side mood-yes">yes ▶</div>
+            </div>
+            <div id="mood-reel" class="hidden">
+                <div id="mood-reel-mood" class="mood-reel-mood"></div>
+                <div class="reel-window">
+                    <div id="mood-reel-track" class="reel-track"></div>
+                    <div class="reel-frame"></div>
+                </div>
+            </div>
+            <div id="mood-pick" class="hidden">
+                <div id="mood-pick-poster"></div>
+                <div class="mood-pick-meta">
+                    <div class="mood-kicker">Tonight you’re watching</div>
+                    <div id="mood-pick-title" class="mood-pick-title"></div>
+                    <div id="mood-pick-app" class="mood-pick-app"></div>
+                    <div id="mood-pick-count" class="mood-pick-count"></div>
+                </div>
+            </div>
+        </section>
+
         <section id="screensaver-settings" class="view page hidden">
             <header class="page-head"><h1>Screen saver</h1></header>
             <div id="screensaver-body" class="settings-body compact"></div>
@@ -165,6 +195,7 @@
     <script src="js/config.js"></script>
     <script src="js/brands.js"></script>
     <script src="js/wallpapers.js"></script>
+    <script src="js/gotham.js"></script>
     <script src="js/devlog.js"></script>
     <script src="js/prefs.js"></script>
     <script src="js/apps.js"></script>
@@ -179,6 +210,8 @@
     <script src="js/screensaver.js"></script>
     <script src="js/home.js"></script>
     <script src="js/settings.js"></script>
+    <script src="js/moods-data.js"></script>
+    <script src="js/moods.js"></script>
     <script src="js/runner-game.js"></script>
     <script src="js/boot.js"></script>
 </body>

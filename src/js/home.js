@@ -79,9 +79,34 @@
         return tile;
     }
 
-    function appTile(item) {
+    // Dock style: the logo in white, floating on the wallpaper, with a light in the brand's colour
+    // behind it (a box-shadow, cheap on the TV; only its opacity changes on focus).
+    function dockFace(item) {
+        var tile = el('div', 'tile dock-tile');
+        var glow = el('span', 'dock-glow');
+        var colour = item.brand && (item.brand.glow || item.brand.fg) || 'hsl(' + hue(item.label) + ',70%,55%)';
+        glow.style.boxShadow = '0 0 110px 70px ' + colour;
+        glow.style.background = colour;
+        tile.appendChild(glow);
+        if (item.brand && item.brand.mark) {
+            var m = new Image();
+            m.className = 'dock-mark';
+            m.src = 'img/dock/' + item.brand.key + '.svg';
+            tile.appendChild(m);
+        } else {
+            var word = el('div', 'dock-word', item.brand && item.brand.text || initials(item.label).toUpperCase());
+            tile.appendChild(word);
+        }
+        return tile;
+    }
+
+    function dockMode() {
+        return Prefs.get().appearance.apps === 'dock';
+    }
+
+    function appTile(item, inDock) {
         var wrap = el('div', 'app');
-        wrap.appendChild(tileFace(item));
+        wrap.appendChild(inDock ? dockFace(item) : tileFace(item));
         wrap.appendChild(el('div', 'label', item.label));
         wrap._item = item;
         return wrap;
@@ -167,23 +192,50 @@
     function renderHome() {
         var row = $('apps-row');
         row.innerHTML = '';
+        var dock = dockMode();
+        $('home').classList.toggle('apps-dock', dock);
         var items = homeItems();
         if (!items.length) items = Apps.allSorted(state.apps, false).slice(0, 8);
-        items.forEach(function (item) { row.appendChild(appTile(item)); });
+        items.forEach(function (item) { row.appendChild(appTile(item, dock)); });
         row.appendChild(allAppsTile());
+        updateDockLine();
 
         var row2 = $('inputs-row');
         row2.innerHTML = '';
+        if (window.Moods) row2.appendChild(Moods.entryTile());
+        var consoles = 0;
         inputs().forEach(function (input) {
-            if (!input.hidden) row2.appendChild(inputTile(input));
+            if (!input.hidden) { row2.appendChild(inputTile(input)); consoles++; }
         });
         $('inputs-section').classList.toggle('hidden', !row2.children.length);
+        $('inputs-title').textContent = consoles ? 'Tonight · Consoles' : 'Tonight';
         applyInputStatus();
         if (UI.isVisible('home')) UI.refresh();
     }
 
+    // The short line above the focused app in Dock style. Moved with a transform, never re-laid out.
+    function updateDockLine(focused) {
+        var line = $('dock-line');
+        if (!line) return;
+        var f = focused || document.querySelector('#apps-row .app.focused');
+        if (!dockMode() || !f || !f._item || !f.parentNode || f.parentNode.id !== 'apps-row') {
+            line.classList.remove('visible');
+            return;
+        }
+        var item = f._item;
+        var text = item.kind === 'all' ? 'Everything else.' : (item.brand && item.brand.line) || '';
+        line.textContent = text;
+        var track = f.parentNode;
+        var x = f.offsetLeft - (track._pos || 0) + f.offsetWidth / 2;
+        // Centred over the logo, but never past the left edge of the row.
+        var left = Math.max(0, x - line.offsetWidth / 2);
+        line.style.transform = 'translate3d(' + Math.round(left) + 'px,0,0)';
+        line.classList.toggle('visible', !!text);
+    }
+
     function applyInputStatus() {
         UI.children($('inputs-row')).forEach(function (tile) {
+            if (!tile._dot) return;
             tile._dot.classList.toggle('on', state.hdmi[tile._item.hdmi] === true);
         });
     }
@@ -320,6 +372,25 @@
         return true;
     }
 
+    // ---------- Weather next to the clock (js/weather.js; hidden until a reading exists)
+
+    function renderWeather() {
+        var box = $('home-weather');
+        if (!box || !window.Weather) return;
+        var list = Weather.all();
+        box.innerHTML = '';
+        list.forEach(function (w) {
+            var item = el('span', 'hw-item');
+            var ic = el('span', 'hw-icon');
+            ic.innerHTML = w.icon;
+            item.appendChild(ic);
+            item.appendChild(el('span', 'hw-temp', w.temp));
+            if (w.place) item.appendChild(el('span', 'hw-place', w.place));
+            box.appendChild(item);
+        });
+        box.classList.toggle('hidden', !list.length);
+    }
+
     // ---------- Clock, data, lifecycle
 
     function updateClock() {
@@ -416,8 +487,10 @@
                 if (item.kind === 'app') launchApp(item);
                 else if (item.kind === 'all') UI.show('all');
                 else if (item.kind === 'input') openInput(item);
+                else if (item.kind === 'moods') UI.show('moods');
                 else if (item.kind === 'settings') UI.show('settings');
             },
+            onFocus: function (focused) { updateDockLine(focused); },
             // Home is the root: Back does nothing.
             onBack: function () { return true; }
         });
@@ -457,6 +530,8 @@
         });
         Appearance.apply();
         updateClock();
+        renderWeather();
+        if (window.Weather) Weather.onUpdate(renderWeather);
         setInterval(updateClock, 10000);
         renderLab();
         var cached = readCache();
@@ -472,7 +547,7 @@
             }
             updateClock();
             refreshInputStatus();
-            if (UI.isVisible('home')) Wallpaper.homeShown();
+            if (UI.isVisible('home')) { Wallpaper.homeShown(); if (window.Weather) Weather.refresh(); }
             if (Date.now() - state.lastFetch > REFRESH_AFTER_MS) setTimeout(loadApps, 1500);
         });
         // With a cache, let the first frames and key presses through before the slow app list.
@@ -486,6 +561,7 @@
         apps: function () { return state.apps; },
         homeItems: homeItems,
         setHomeItems: setHomeItems,
+        render: renderHome,
         inputs: inputs,
         setInputs: setInputs,
         hdmiStatus: function () { return state.hdmi; },
