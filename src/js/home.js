@@ -131,18 +131,6 @@
         return wrap;
     }
 
-    function pageTile(name, sub, view) {
-        var wrap = el('div', 'input page-entry');
-        var tile = el('div', 'tile');
-        var meta = el('div', 'meta');
-        meta.appendChild(el('div', 'name', name));
-        meta.appendChild(el('div', 'port', sub));
-        tile.appendChild(meta);
-        wrap.appendChild(tile);
-        wrap._item = { kind: 'page', view: view };
-        return wrap;
-    }
-
     function inputTile(input) {
         var brand = findBrand(input.brand || '') || { bg: '#2a2f3a', fg: '#fff', mark: null };
         var wrap = el('div', 'input');
@@ -212,22 +200,42 @@
         row.appendChild(allAppsTile());
         updateDockLine();
 
+        // Below the first screen, each feature is a row of its own; Down scrolls to it.
+        section('shows-section', window.Shows ? Shows.render($('shows-row')) : 0);
+        section('favs-section', window.Favourites ? Favourites.render($('fav-row')) : 0);
+        section('moods-section', window.Moods ? Moods.renderHome($('moods-row')) : 0);
+        section('chess-section', window.Chess ? Chess.renderTeaser($('chess-row')) : 0);
+
         var row2 = $('inputs-row');
         row2.innerHTML = '';
-        if (window.Moods) row2.appendChild(Moods.entryTile());
-        if (window.Chess) row2.appendChild(Chess.entryTile());
-        // My Shows and Favourites are full screens of their own, reached from this row.
-        if (window.Shows && Shows.render($('shows-row'))) row2.appendChild(pageTile('My Shows', 'Series you come back to', 'showspage'));
-        if (window.Favourites && Favourites.render($('fav-row'))) row2.appendChild(pageTile('Favourites', 'The usual suspects', 'favspage'));
-        var consoles = 0;
         inputs().forEach(function (input) {
-            if (!input.hidden) { row2.appendChild(inputTile(input)); consoles++; }
+            if (!input.hidden) row2.appendChild(inputTile(input));
         });
-        $('inputs-section').classList.toggle('hidden', !row2.children.length);
-        $('inputs-title').textContent = consoles ? 'Tonight · Consoles' : 'Tonight';
+        section('inputs-section', row2.children.length);
 
         applyInputStatus();
         if (UI.isVisible('home')) UI.refresh();
+    }
+
+    function section(id, count) {
+        $(id).classList.toggle('hidden', !count);
+    }
+
+    /*
+     * Home is one tall rail: the first screen (clock, dock) and below it My Shows, Favourites,
+     * moods, chess and consoles. Focusing a row below the dock slides the rail up so that row sits
+     * high on the screen with a strip of the one above still showing. One transform on one layer;
+     * offsets are read only when focus changes row.
+     */
+    var RAIL_TOP = 230;
+    function scrollHome(focused) {
+        var rail = $('home-rail');
+        var sec = focused && focused.closest ? focused.closest('.home-sec') : null;
+        var y = sec ? Math.max(0, $('home-more').offsetTop + sec.offsetTop - RAIL_TOP) : 0;
+        if (rail._y === y) return;
+        rail._y = y;
+        rail.style.transform = 'translate3d(0,' + (-y) + 'px,0)';
+        $('home').classList.toggle('scrolled', y > 0);
     }
 
     // The short line above the focused app in Dock style. Moved with a transform, never re-laid out.
@@ -242,6 +250,16 @@
         return lines[(k + lineVisit) % lines.length];
     }
 
+    // Coming to Home, focus starts on the app you usually open at this hour (js/usage.js).
+    var usual = null;
+    function focusUsualApp() {
+        if (!window.Usage) return;
+        var tiles = UI.children($('apps-row'));
+        usual = Usage.usualApp(tiles.map(function (t) { return t._item.id; }).filter(Boolean));
+        var tile = tiles.filter(function (t) { return t._item.id === usual; })[0];
+        if (tile) UI.focusOn(tile);
+    }
+
     function updateDockLine(focused) {
         var line = $('dock-line');
         if (!line) return;
@@ -251,7 +269,9 @@
             return;
         }
         var item = f._item;
-        var text = item.kind === 'all' ? 'Everything else.' : pickLine(item.brand);
+        var text = item.kind === 'all' ? 'Everything else.'
+            : item.id && item.id === usual ? 'Your usual around this time.'
+            : pickLine(item.brand);
         line.textContent = text;
         var track = f.parentNode;
         var x = f.offsetLeft - (track._pos || 0) + f.offsetWidth / 2;
@@ -546,8 +566,9 @@
             startRow: 1,
             hints: [['OK', 'Open'], ['▲', 'Source · Settings']],
             rows: function () {
-                return [[$('source-btn'), $('gear')], UI.children($('apps-row')), UI.children($('inputs-row'))]
-                    .filter(function (r, i) { return i < 2 || r.length; });
+                return [[$('source-btn'), $('gear')], UI.children($('apps-row'))].concat(
+                    ['shows-row', 'fav-row', 'moods-row', 'chess-row', 'inputs-row'].map(function (id) { return UI.children($(id)); })
+                ).filter(function (r, i) { return i < 2 || r.length; });
             },
             activate: function (item) {
                 if (item.kind === 'app') launchApp(item);
@@ -555,32 +576,29 @@
                 else if (item.kind === 'input') openInput(item);
                 else if (item.kind === 'moods') UI.show('moods');
                 else if (item.kind === 'chess') UI.show('chess');
+                else if (item.kind === 'mood') UI.show('moods', { start: item.index });
+                else if (item.kind === 'show') Shows.activate(item);
+                else if (item.kind === 'favourite') Favourites.activate(item);
                 else if (item.kind === 'settings') UI.show('settings');
                 else if (item.kind === 'source') showSourceMenu();
-                else if (item.kind === 'page') UI.show(item.view);
             },
-            onShow: function () { lineVisit++; updateDockLine(); },
-            onFocus: function (focused) { updateDockLine(focused); },
+            onShow: function (opts) {
+                lineVisit++;
+                if (!opts.back) focusUsualApp();
+                updateDockLine();
+                // Coming back from a game: show where it stands now.
+                if (opts.back && window.Chess) Chess.renderTeaser($('chess-row'));
+            },
+            onFocus: function (focused) {
+                updateDockLine(focused);
+                scrollHome(focused);
+                if (window.Favourites) Favourites.focus(focused);
+            },
             // Home is the root: Back does nothing.
             onBack: function () { return true; }
         });
         $('gear')._item = { kind: 'settings' };
         $('source-btn')._item = { kind: 'source' };
-
-        UI.register('showspage', {
-            el: $('showspage'),
-            rows: function () { return [UI.children($('shows-row'))]; },
-            activate: function (item) { Shows.activate(item); },
-            hints: [['OK', 'Open'], ['Back', 'Home']]
-        });
-
-        UI.register('favspage', {
-            el: $('favspage'),
-            rows: function () { return [UI.children($('fav-row'))]; },
-            activate: function (item) { Favourites.activate(item); },
-            onFocus: function (focused) { Favourites.focus(focused); },
-            hints: [['OK', 'Open'], ['Back', 'Home']]
-        });
 
         UI.register('all', {
             el: $('all'),

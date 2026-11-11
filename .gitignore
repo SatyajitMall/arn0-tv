@@ -32,6 +32,10 @@ signature*.xml
 # so nothing has to be stripped before a push. See src/js/config.local.example.js.
 src/js/config.local.js
 
+# TMDB artwork and availability (scripts/fetch-catalog.mjs): third-party art, local builds only
+src/js/catalog.local.js
+src/img/catalog/
+
 # native helper build output (device-specific; build it yourself)
 native/**/bin/
 native/**/obj/

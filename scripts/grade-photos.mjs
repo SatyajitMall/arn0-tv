@@ -1,8 +1,8 @@
 // Grades the licensed photos in art-src/photos/ into one look and writes 1920x1080 wallpapers.
 //
-// The look (night-city thriller): colour drained to near monochrome with cold teal shadows,
-// except warm lights (sodium lamps, tail lights, windows), which keep their colour; blacks
-// crushed with an S-curve; fine grain; a vignette; and a fade low and to the left where the
+// The look (night-city thriller): colour cooled but kept, deep navy shadows and violet mids,
+// warm lights (sodium lamps, tail lights, windows) keep more of their colour, a magenta haze in the sky; blacks
+// lifted into navy with a gentle S-curve; fine grain; a vignette; and a fade low and to the left where the
 // launcher's text sits. Run in headless Chrome so the maths is plain canvas, no image tools.
 //
 //   art-src/photos/<name>.jpg   (Unsplash License; credits in src/img/wallpapers/CREDITS.md)
@@ -52,25 +52,29 @@ img.onload = function () {
     var l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
     // warmth of this pixel: how much red/orange leads blue
     var warm = Math.max(0, Math.min(1, (r - b) * 3 - 0.05)) * Math.min(1, l * 3);
-    var keep = 0.12 + WARM * 0.75 * warm;              // saturation kept
+    var keep = 0.42 + WARM * 0.45 * warm;              // saturation kept: colour stays, cooled
     r = l + (r - l) * keep; g = l + (g - l) * keep; b = l + (b - l) * keep;
-    // S-curve with crushed toe
-    function curve(v) { v = Math.max(0, Math.min(1, v)); v = Math.pow(v, 1.08); return v * v * (3 - 2 * v) * 0.82 + v * 0.18; }
+    // gentle S-curve, blacks lifted into navy rather than crushed to grey
+    function curve(v) { v = Math.max(0, Math.min(1, v)); v = Math.pow(v, 1.05); return v * v * (3 - 2 * v) * 0.7 + v * 0.3; }
     r = curve(r); g = curve(g); b = curve(b);
-    // split tone: cold teal shadows, slightly warm highlights
-    var sh = Math.pow(1 - Math.min(1, l * 1.6), 1.6);
-    var mid = Math.max(0, 1 - Math.abs(l - 0.3) * 3);
-    r += -0.022 * sh - 0.02 * mid; g += 0.012 * sh + 0.004 * mid; b += 0.06 * sh + 0.045 * mid;
-    var hl = Math.max(0, l - 0.55);
-    r += 0.05 * hl; b -= 0.03 * hl;
+    // split tone: deep navy shadows, violet mids, neutral-warm highlights
+    var sh = Math.pow(1 - Math.min(1, l * 1.5), 1.4);
+    var mid = Math.max(0, 1 - Math.abs(l - 0.32) * 2.6);
+    r += 0.004 * sh + 0.018 * mid; g += 0.022 * sh + 0.004 * mid; b += 0.105 * sh + 0.12 * mid;
+    var hl = Math.max(0, l - 0.6);
+    r += 0.04 * hl; b -= 0.02 * hl;
     // vignette + UI fade (bottom and left)
     var px = (i / 4) % W, py = (i / 4 - px) / W;
     var dx = (px - W * 0.55) / (W * 0.62), dy = (py - H * 0.45) / (H * 0.62);
     var v = 1 - 0.55 * Math.pow(Math.min(1, Math.sqrt(dx * dx + dy * dy)), 2.4);
-    var fb = py > H * 0.5 ? 1 - 0.72 * Math.pow((py - H * 0.5) / (H * 0.5), 1.3) : 1;
+    var fb = py > H * 0.5 ? 1 - 0.6 * Math.pow((py - H * 0.5) / (H * 0.5), 1.3) : 1;
     var fl = px < W * 0.45 ? 1 - 0.28 * Math.pow(1 - px / (W * 0.45), 1.5) : 1;
     var k = v * fb * fl;
-    var n = (rnd() - 0.5) * 0.035;
+    // magenta haze from the upper left, as a soft backlight in the sky
+    var hx = px / W, hy = py / H, hz = Math.max(0, 1 - Math.sqrt((hx - 0.12) * (hx - 0.12) * 1.6 + (hy - 0.18) * (hy - 0.18) * 2.4) / 0.75);
+    hz = hz * hz * 0.15;
+    r += hz * 0.9; g += hz * 0.05; b += hz * 0.75;
+    var n = (rnd() - 0.5) * 0.03;
     p[i] = Math.max(0, Math.min(255, (r * k + n) * 255));
     p[i + 1] = Math.max(0, Math.min(255, (g * k + n) * 255));
     p[i + 2] = Math.max(0, Math.min(255, (b * k + n) * 255));

@@ -2,7 +2,7 @@
 // the original vector tokens in src/js/chess.js, lit with SVG lighting filters, plus a stone board.
 //
 //   src/img/chess/{w,b}{k,q,r,b,n,p}.png   192x240 sprites, piece standing on the bottom edge
-//   src/img/chess/board.jpg                880x880 board: 8x8 stone squares in a gunmetal frame
+//   src/img/chess/board.jpg                880x880 board: 8x8 blue-teal stone squares in a navy frame
 //
 // All lighting is baked; on the TV the board is one image and the pieces are plain <img>s.
 //
@@ -90,16 +90,16 @@ body { margin: 0; background: transparent; }
 </style></head><body><canvas id="c" width="880" height="880"></canvas><script>
 var c = document.getElementById('c'), x = c.getContext('2d');
 var seed = 3; function r() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
-// frame: brushed gunmetal with a bevel
+// frame: brushed navy metal with a bevel
 var fg = x.createLinearGradient(0, 0, 880, 880);
-fg.addColorStop(0, '#2a2d32'); fg.addColorStop(0.5, '#15171a'); fg.addColorStop(1, '#22252a');
+fg.addColorStop(0, '#1c2850'); fg.addColorStop(0.5, '#0b1130'); fg.addColorStop(1, '#18224a');
 x.fillStyle = fg; x.fillRect(0, 0, 880, 880);
 for (var i = 0; i < 2200; i++) { x.fillStyle = 'rgba(255,255,255,' + (r() * 0.025) + ')'; x.fillRect(r() * 880, r() * 880, r() * 60 + 10, 1); }
 x.strokeStyle = 'rgba(255,255,255,0.10)'; x.lineWidth = 2; x.strokeRect(2, 2, 876, 876);
 x.strokeStyle = 'rgba(0,0,0,0.8)'; x.lineWidth = 3; x.strokeRect(37.5, 37.5, 805, 805);
-// squares: honed stone, each with its own slight tone and fine veining
+// squares: blue-teal glass-like stone, each with its own slight tone and fine veining
 function stone(px, py, light) {
-  var base = light ? [96, 100, 106] : [26, 28, 32];
+  var base = light ? [82, 136, 168] : [22, 46, 74];
   var k = (r() - 0.5) * (light ? 12 : 6);
   x.fillStyle = 'rgb(' + (base[0] + k) + ',' + (base[1] + k) + ',' + (base[2] + k) + ')';
   x.fillRect(px, py, 100, 100);

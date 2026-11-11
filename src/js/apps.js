@@ -40,6 +40,7 @@
     }
 
     function launch(appId) {
+        if (window.Usage) Usage.record('app', appId);
         return withTimeout(new Promise(function (resolve, reject) {
             tizen.application.launch(appId, resolve, reject);
         }), 8000, 'Launch');

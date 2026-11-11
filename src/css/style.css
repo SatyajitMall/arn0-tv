@@ -2107,13 +2107,6 @@ html.theme-noir[data-view="home"] .hints { display: none; }
 .theme-noir .page { background: rgba(3, 5, 8, 0.6); }
 .theme-noir .page-head h1 { font-size: 52px; font-weight: 300; }
 
-/* My Shows / Favourites pages */
-.feature-row { position: absolute; top: 330px; left: var(--edge); right: 0; }
-#showspage .show, #showspage .show-card { width: 560px; }
-#showspage .show-card { height: 315px; }
-#favspage .fav, #favspage .fav-card { width: 270px; }
-#favspage .fav-card { height: 352px; }
-#favspage .fav-scene { opacity: 0; }
 
 /* Favourites with a borrowed photo: grey at rest, the show's colour washes in on focus */
 .fav-art-photo { background-size: cover; background-position: center; }
@@ -2147,3 +2140,193 @@ html.theme-noir[data-view="home"] .hints { display: none; }
 .poster.photo-poster .poster-title,
 .poster.photo-poster .poster-app { z-index: 1; }
 .theme-noir .poster-title { font-family: "Outfit", sans-serif; font-weight: 500; letter-spacing: -0.3px; }
+
+/* ------------------------------------------------------------------------------------------
+ * Reel colour look: deep navy and violet instead of near monochrome. Photos keep their colour
+ * (cooled), surfaces and lines go blue, a magenta glow sits behind the top of Home, posters and
+ * favourites stay in colour. Static layers only; nothing new animates.
+ * ---------------------------------------------------------------------------------------- */
+.theme-noir {
+    --bg: #060918;
+    --fg: #eef1fa;
+    --muted: rgba(200, 210, 240, 0.58);
+    --faint: rgba(200, 210, 240, 0.42);
+    --nx-line: rgba(150, 170, 255, 0.16);
+    --nx-surface: rgba(10, 14, 38, 0.72);
+}
+html.theme-noir, .theme-noir body { background-color: #060918; }
+.theme-noir #home::before {   /* magenta backlight, upper left, plus a navy floor under the dock */
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 1920px; height: 1080px;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 900px 620px at 260px 120px, rgba(190, 40, 150, 0.22), rgba(190, 40, 150, 0) 70%),
+        linear-gradient(rgba(6, 9, 24, 0) 45%, rgba(6, 9, 30, 0.55) 100%);
+}
+.theme-noir .page { background: rgba(6, 9, 28, 0.62); }
+.theme-noir #inputs-row .input .tile { background: rgba(10, 14, 40, 0.5) !important; border-color: rgba(150, 170, 255, 0.22); }
+.theme-noir .show-card { background-color: #0c1230; }
+.theme-noir .show-card::after, .theme-noir .fav-card::after { border-color: rgba(170, 190, 255, 0.6); }
+
+/* Favourites: blue-tinted colour at rest, full colour on focus */
+.fav-grey.fav-art-photo, .fav-grey.fav-photo { filter: saturate(0.75) brightness(0.8); }
+.theme-noir .fav-face.fav-art-photo { background-color: #0c1230 !important; }
+
+/* Mood posters: colour, a faint violet bloom */
+.poster.photo-poster::before { background: linear-gradient(rgba(10, 8, 40, 0), rgba(8, 8, 30, 0.85)); }
+.theme-noir .poster.fan1 { box-shadow: 0 0 70px rgba(150, 90, 255, 0.28), 0 30px 60px rgba(0, 0, 0, 0.6); }
+
+/* Chess: navy veil over the angel, teal-blue highlights */
+.theme-noir #chess { background-color: #050818; }
+.theme-noir #chess::before { background: linear-gradient(rgba(6, 9, 30, 0.35), rgba(6, 9, 30, 0.6)); }
+.theme-noir .sq.held { box-shadow: inset 0 0 0 100px rgba(80, 220, 230, 0.32); }
+.theme-noir .sq.last { box-shadow: inset 0 0 0 100px rgba(120, 200, 255, 0.12); }
+.theme-noir .chess-taunt { background: rgba(10, 14, 40, 0.6); }
+
+/* Mood deck: navy room, the mood's colour only as a faint tint, a violet bloom behind the card */
+.theme-noir .mood-wash { opacity: 0.05; }
+.theme-noir #moods::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 1920px; height: 1080px;
+    background: radial-gradient(ellipse 760px 560px at 960px 520px, rgba(120, 70, 230, 0.22), rgba(120, 70, 230, 0) 72%);
+}
+.theme-noir .mood-card { background: rgba(12, 16, 44, 0.92); border-color: rgba(170, 190, 255, 0.22) !important; }
+
+/* ==========================================================================
+ * Scrolling Home: everything on one rail. The first screen is unchanged; below it My Shows,
+ * Favourites, moods, chess and consoles are rows of their own (js/home.js scrollHome). The rail
+ * moves with one transform; a navy veil fades in over the wallpaper once it has scrolled.
+ * ========================================================================== */
+.home-rail {
+    position: absolute;
+    top: 0; left: 0; width: 1920px; height: 1080px;
+    will-change: transform;
+    transition: transform 0.42s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.home-veil {
+    position: absolute;
+    top: 0; left: 0; width: 1920px; height: 1080px;
+    background: rgba(5, 8, 24, 0.74);
+    opacity: 0;
+    will-change: opacity;
+    transition: opacity 0.42s ease-out;
+    pointer-events: none;
+}
+#home.scrolled .home-veil { opacity: 1; }
+
+.home-more { position: absolute; top: 968px; left: var(--edge); width: 1800px; }
+#home .home-sec { position: static; margin-bottom: 96px; }
+#home .home-sec .row-viewport { width: 1800px; }
+.sec-title {
+    margin: 0 0 28px;
+    font-family: "Outfit", sans-serif;
+    font-size: 30px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    color: var(--fg);
+}
+#home .home-sec h2.sec-title { display: block; }
+.sec-sub { margin-left: 18px; font-size: 22px; letter-spacing: 0.04em; color: var(--muted); }
+
+/* My Shows and Favourites at Home size */
+#home .show, #home .show-card { width: 560px; }
+#home .show-card { height: 315px; }
+#home .fav, #home .fav-card { width: 250px; }
+#home .fav { margin-right: 34px; }
+#home .fav-card { height: 330px; }
+
+/* Mood row: a card per mood with a fan of its titles */
+.mood-tile { flex: none; width: 400px; margin-right: 34px; }
+.mood-tile-card {
+    position: relative;
+    height: 420px;
+    border-radius: 18px;
+    border: 1px solid var(--nx-line, rgba(255, 255, 255, 0.14));
+    background: rgba(12, 16, 44, 0.78);
+    box-shadow: inset 0 3px 0 var(--mood-c, #888);
+    will-change: transform;
+    transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.mood-tile-card .mood-fan { top: 44px; }
+.mood-tile-card .poster.fan { left: 125px; width: 150px; height: 222px; }
+.mood-tile-name {
+    position: absolute; left: 30px; right: 30px; top: 300px;
+    font-family: "Outfit", sans-serif; font-size: 34px; font-weight: 400; color: var(--fg);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mood-tile-line {
+    position: absolute; left: 30px; right: 30px; top: 350px;
+    font-family: "Outfit", sans-serif; font-size: 20px; line-height: 1.3; color: var(--muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mood-tile.focused .mood-tile-card { transform: scale(1.05); border-color: rgba(220, 228, 255, 0.55); }
+.mood-tile-card::after,
+.ct-card::after {
+    content: "";
+    position: absolute;
+    top: -14px; right: -14px; bottom: -14px; left: -14px;
+    border: 20px solid transparent;
+    border-image: url("../img/noir/reticle.svg") 20 stretch;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+}
+.mood-tile.focused .mood-tile-card::after,
+.chess-teaser.focused .ct-card::after { opacity: 1; }
+
+/* Chess row: the saved game on a small tilted board, the Regent watching */
+.chess-teaser { flex: none; width: 1680px; }
+.ct-card {
+    position: relative;
+    height: 440px;
+    border-radius: 20px;
+    border: 1px solid var(--nx-line, rgba(255, 255, 255, 0.14));
+    background:
+        radial-gradient(ellipse 420px 300px at 760px 170px, rgba(200, 50, 40, 0.22), rgba(200, 50, 40, 0) 70%),
+        linear-gradient(90deg, rgba(10, 16, 46, 0.92), rgba(8, 12, 34, 0.6));
+    will-change: transform;
+    transition: transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.chess-teaser.focused .ct-card { transform: scale(1.02); border-color: rgba(220, 228, 255, 0.5); }
+.ct-stage { position: absolute; left: 70px; top: 6px; width: 440px; height: 440px; perspective: 1200px; perspective-origin: 220px 0; }
+.ct-board {
+    position: absolute; top: 0; left: 0; width: 440px; height: 440px;
+    background: url("../img/chess/board.jpg") 0 0 / 440px 440px no-repeat;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7);
+    transform-origin: 50% 100%;
+    transform: rotateX(40deg);
+    transform-style: preserve-3d;
+}
+.ct-sq { position: absolute; width: 50px; height: 50px; transform-style: preserve-3d; }
+.ct-sq.ct-last { background: rgba(120, 200, 255, 0.2); }
+.ct-pc {
+    position: absolute; left: 1px; bottom: 14px; width: 48px; height: 60px;
+    transform-origin: 50% 100%;
+    transform: rotateX(-40deg);
+}
+.ct-helm { position: absolute; left: 640px; top: 76px; width: 200px; height: 234px; }
+.ct-helm svg { position: relative; width: 200px; height: 234px; z-index: 1; }
+.ct-helm path[stroke="#ffd34d"] { stroke: #8a8f98; }
+.ct-visor-glow {
+    position: absolute; left: 0; top: 60px; width: 200px; height: 120px; z-index: 2;
+    background: radial-gradient(ellipse 90px 30px at 100px 62px, rgba(255, 75, 43, 0.85), rgba(255, 75, 43, 0) 100%);
+    opacity: 0.35;
+    will-change: opacity;
+}
+html[data-view="home"] #home.scrolled .ct-visor-glow { animation: ct-visor 2.8s ease-in-out infinite alternate; }
+@keyframes ct-visor { from { opacity: 0.25; } to { opacity: 0.95; } }
+.ct-text { position: absolute; left: 920px; top: 64px; right: 60px; font-family: "Outfit", sans-serif; }
+.ct-kicker { font-size: 18px; font-weight: 600; letter-spacing: 0.34em; text-transform: uppercase; color: var(--muted); }
+.ct-name { margin-top: 14px; font-size: 58px; font-weight: 300; letter-spacing: -0.5px; color: var(--fg); }
+.ct-status { margin-top: 10px; font-size: 30px; font-weight: 500; color: var(--fg); }
+.ct-taunt { margin-top: 18px; padding-left: 18px; border-left: 2px solid #c8372d; font-size: 24px; font-weight: 300; color: var(--muted); }
+.ct-cta {
+    display: inline-block; margin-top: 34px; padding: 12px 28px 12px 14px;
+    border-radius: 30px; border: 1px solid rgba(220, 228, 255, 0.3);
+    font-size: 22px; font-weight: 500; letter-spacing: 0.04em; color: var(--fg);
+}
+.ct-key { display: inline-block; margin-right: 14px; padding: 2px 10px; border-radius: 6px; background: var(--fg); color: #07080a; font-size: 16px; font-weight: 700; }
+.chess-teaser.focused .ct-cta { background: var(--fg); color: #07080a; }
+.chess-teaser.focused .ct-key { background: #07080a; color: var(--fg); }

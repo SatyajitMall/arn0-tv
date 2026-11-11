@@ -11,6 +11,9 @@
         <div id="bg"></div>
 
         <section id="home" class="view">
+            <div id="home-veil" class="home-veil"></div>
+            <div id="fav-scene" class="fav-scene"></div>
+            <div id="home-rail" class="home-rail">
             <header class="clock">
                 <div id="greeting" class="greeting"></div>
                 <div id="time"><span id="time-main"></span><span id="time-suffix"></span></div>
@@ -38,21 +41,29 @@
                 <div id="dock-line" class="dock-line"></div>
                 <div class="row-viewport"><div id="apps-row" class="row-track"></div></div>
             </div>
-            <div id="inputs-section" class="shelf">
-                <h2 id="inputs-title">Consoles</h2>
-                <div class="row-viewport"><div id="inputs-row" class="row-track"></div></div>
+            <!-- Below the first screen: Down scrolls the rail to each section (js/home.js). -->
+            <div id="home-more" class="home-more">
+                <div id="shows-section" class="home-sec">
+                    <h2 class="sec-title">My Shows</h2>
+                    <div class="row-viewport"><div id="shows-row" class="row-track"></div></div>
+                </div>
+                <div id="favs-section" class="home-sec">
+                    <h2 class="sec-title">My Favourites</h2>
+                    <div class="row-viewport"><div id="fav-row" class="row-track"></div></div>
+                </div>
+                <div id="moods-section" class="home-sec">
+                    <h2 class="sec-title">Don’t have time to browse? <span class="sec-sub">Pick a mood, we pick the show</span></h2>
+                    <div class="row-viewport"><div id="moods-row" class="row-track"></div></div>
+                </div>
+                <div id="chess-section" class="home-sec">
+                    <div class="row-viewport"><div id="chess-row" class="row-track"></div></div>
+                </div>
+                <div id="inputs-section" class="home-sec">
+                    <h2 id="inputs-title" class="sec-title">Consoles</h2>
+                    <div class="row-viewport"><div id="inputs-row" class="row-track"></div></div>
+                </div>
             </div>
-        </section>
-
-        <section id="showspage" class="view page hidden">
-            <header class="page-head"><h1>My Shows</h1></header>
-            <div class="feature-row"><div class="row-viewport"><div id="shows-row" class="row-track"></div></div></div>
-        </section>
-
-        <section id="favspage" class="view page hidden">
-            <div id="fav-scene" class="fav-scene"></div>
-            <header class="page-head"><h1>My Favourites</h1></header>
-            <div class="feature-row"><div class="row-viewport"><div id="fav-row" class="row-track"></div></div></div>
+            </div>
         </section>
 
         <section id="all" class="view page hidden">
@@ -239,11 +250,14 @@
     <!-- Gitignored per-TV overrides, merged by config.js below. Empty unless you create it. -->
     <script src="js/config.local.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/catalog.local.js"></script>
+    <script src="js/catalog.js"></script>
     <script src="js/brands.js"></script>
     <script src="js/wallpapers.js"></script>
     <script src="js/gotham.js"></script>
     <script src="js/devlog.js"></script>
     <script src="js/prefs.js"></script>
+    <script src="js/usage.js"></script>
     <script src="js/apps.js"></script>
     <script src="js/inputs.js"></script>
     <script src="js/wallpaper.js"></script>

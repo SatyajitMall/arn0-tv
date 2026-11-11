@@ -25,8 +25,14 @@
     var MOOD = ['city-aerial', 'noir-street', 'fog-traffic', 'fog-towers', 'cloud-towers', 'dark-tower', 'storm-tower'];
 
     function tile(s, i) {
+        // Your still, else the TMDB backdrop, else a graded night photo; and the service TMDB says streams it.
+        var e = window.Catalog ? Catalog.title(s.title) : null;
+        s = {
+            title: s.title,
+            app: window.Catalog ? Catalog.appFor(s.title, s.app) : s.app,
+            image: s.image || (e && e.backdrop) || 'img/cards/' + MOOD[i % MOOD.length] + '.jpg'
+        };
         var app = appFor(s);
-        if (!s.image) s = { title: s.title, app: s.app, image: 'img/cards/' + MOOD[i % MOOD.length] + '.jpg' };
         var wrap = el('div', 'show');
         var card = el('div', 'show-card');
         card.style.setProperty('--show-c', (app && app.color) || '#888');
@@ -43,9 +49,12 @@
         return wrap;
     }
 
+    // The show you open most around this time comes first.
     function render(row) {
         row.innerHTML = '';
-        list().forEach(function (s, i) { row.appendChild(tile(s, i)); });
+        var shows = list();
+        if (window.Usage) shows = Usage.rank(shows, function (s) { return Usage.score('show', s.title); });
+        shows.forEach(function (s, i) { row.appendChild(tile(s, i)); });
         return row.children.length;
     }
 
@@ -53,6 +62,7 @@
         var s = item.show;
         var app = appFor(s);
         if (!app) { UI.toast(s.title + ': no app set (shows[].app in config)'); return; }
+        if (window.Usage) Usage.record('show', s.title);
         UI.toast('Opening ' + app.label + ': search “' + s.title + '”');
         Apps.launch(app.id).catch(function (err) {
             UI.toast('Could not open ' + app.label + ': ' + DevLog.errorText(err));

@@ -60,7 +60,14 @@
 
     function tile(f, i) {
         // Your own picture if given; otherwise a graded night photo behind the initials.
-        if (!f.photo) f = { name: f.name, show: f.show, app: f.app, color: f.color, scene: f.scene, art: 'img/cards/tall/' + MOOD[i % MOOD.length] + '.jpg' };
+        // Your own picture, else the actor's TMDB portrait with the show's backdrop as the scene,
+        // else a graded night photo behind the initials.
+        var portrait = window.Catalog ? Catalog.face(f.name, f.show) : null;
+        var show = window.Catalog ? Catalog.title(f.show) : null;
+        var app = window.Catalog ? Catalog.appFor(f.show, f.app) : f.app;
+        if (f.photo) f = { name: f.name, show: f.show, app: app, color: f.color, photo: f.photo, scene: f.scene || (show && show.backdrop) };
+        else if (portrait) f = { name: f.name, show: f.show, app: app, color: f.color, photo: portrait, scene: f.scene || (show && show.backdrop) };
+        else f = { name: f.name, show: f.show, app: app, color: f.color, scene: f.scene, art: 'img/cards/tall/' + MOOD[i % MOOD.length] + '.jpg' };
         var wrap = el('div', 'fav');
         var card = el('div', 'fav-card');
         card.style.setProperty('--fav-c', colourOf(f));
@@ -76,7 +83,9 @@
 
     function render(row) {
         row.innerHTML = '';
-        list().forEach(function (f, i) { row.appendChild(tile(f, i)); });
+        var favs = list();
+        if (window.Usage) favs = Usage.rank(favs, function (f) { return Usage.score('favourite', f.name); });
+        favs.forEach(function (f, i) { row.appendChild(tile(f, i)); });
         return row.children.length;
     }
 
@@ -107,6 +116,7 @@
             UI.toast(f.name + ': no app set (favourites[].app in config)');
             return;
         }
+        if (window.Usage) Usage.record('favourite', f.name);
         UI.toast('Opening ' + app.label + (f.show ? ': search “' + f.show + '”' : ''));
         Apps.launch(app.id).catch(function (err) {
             UI.toast('Could not open ' + app.label + ': ' + DevLog.errorText(err));

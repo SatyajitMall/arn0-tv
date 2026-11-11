@@ -24,6 +24,16 @@
     var COUNTDOWN = 3;
 
     var data = window.MOOD_DATA || { apps: {}, moods: [] };
+    // TMDB catalog (js/catalog.js): real posters, and each title moved to the service that
+    // actually streams it in India when that differs from moods-data.js.
+    if (window.Catalog) {
+        data.moods.forEach(function (m) {
+            m.titles = (m.titles || []).map(function (t) {
+                var e = Catalog.title(t.title);
+                return { title: t.title, note: t.note, app: Catalog.appFor(t.title, t.app), poster: t.poster || (e && e.poster) || null };
+            });
+        });
+    }
     var state = { mode: 'deck', index: 0, mood: null, pick: null, timers: [] };
 
     function later(fn, ms) { state.timers.push(setTimeout(fn, ms)); }
@@ -52,8 +62,39 @@
         });
     }
 
+    // Moods you keep saying yes to around this time come first; "Anything at all" stays last.
+    function moodScore(m) {
+        if (m.any || !window.Usage) return -1e9;
+        return Usage.score('mood-yes', m.key) - 0.5 * Usage.score('mood-nope', m.key);
+    }
+
+    // The order is fixed for one visit (refreshOrder on show), so a yes or nope does not reshuffle
+    // the deck under you.
+    var order = null;
+    function refreshOrder() {
+        var list = data.moods.filter(function (m) { return titlesFor(m).length; });
+        order = window.Usage ? Usage.rank(list, moodScore) : list;
+    }
+
     function moods() {
-        return data.moods.filter(function (m) { return titlesFor(m).length; });
+        if (!order) refreshOrder();
+        return order;
+    }
+
+    // A title on an app you use at this hour is likelier to be picked; one picked lately, less.
+    function choose(titles) {
+        var weights = titles.map(function (t) {
+            if (!window.Usage) return 1;
+            var app = data.apps[t.app];
+            return (1 + Usage.score('app', app.id)) / (1 + 2 * Usage.score('pick', t.title));
+        });
+        var total = weights.reduce(function (a, b) { return a + b; }, 0);
+        var r = Math.random() * total;
+        for (var i = 0; i < titles.length; i++) {
+            r -= weights[i];
+            if (r <= 0) return titles[i];
+        }
+        return titles[titles.length - 1];
     }
 
     // ---------- Faces
@@ -141,6 +182,7 @@
         if (!card || state.mode !== 'deck') return;
         state.mode = 'busy';
         sound('move');
+        if (window.Usage) Usage.record('mood-nope', moods()[state.index % moods().length].key);
         card.classList.add('fly-left');
         later(function () {
             state.index += 1;
@@ -155,6 +197,7 @@
         state.mode = 'busy';
         sound('select');
         state.mood = moods()[state.index % moods().length];
+        if (window.Usage) Usage.record('mood-yes', state.mood.key);
         card.classList.add('fly-right');
         later(spin, FLY_MS);
     }
@@ -173,7 +216,7 @@
     function spin() {
         clearTimers();
         var titles = titlesFor(state.mood);
-        var pick = titles[Math.floor(Math.random() * titles.length)];
+        var pick = choose(titles);
         // Fill the strip with shuffled titles and put the pick at a fixed late row.
         var strip = [];
         while (strip.length < REEL_LEN) strip = strip.concat(shuffled(titles));
@@ -233,6 +276,7 @@
         var t = state.pick;
         var app = data.apps[t.app];
         state.mode = 'deck';
+        if (window.Usage) Usage.record('pick', t.title);
         UI.toast('Opening ' + app.label + ': search “' + t.title + '”');
         Apps.launch(app.id).catch(function (err) {
             UI.toast('Could not open ' + app.label + ': ' + DevLog.errorText(err));
@@ -282,11 +326,15 @@
     function init() {
         UI.register('moods', {
             el: $('moods'),
-            onShow: function () {
+            // opts.start: a mood chosen on Home; its card flies right and the reel spins at once.
+            onShow: function (opts) {
                 clearTimers();
                 state.mode = 'deck';
+                if (opts && opts.start !== undefined) state.index = opts.start;
+                else refreshOrder();
                 show('deck');
                 renderDeck();
+                if (opts && opts.start !== undefined) later(yes, 180);
             },
             onKey: onKey,
             onBack: function () {
@@ -298,19 +346,27 @@
         });
     }
 
-    // Home's entry tile.
-    function entryTile() {
-        var wrap = el('div', 'input mood-entry');
-        var tile = el('div', 'tile');
-        var meta = el('div', 'meta');
-        meta.appendChild(el('div', 'name', 'Pick for me'));
-        meta.appendChild(el('div', 'port', 'Don’t have time to browse?'));
-        tile.appendChild(el('div', 'mood-entry-cards'));
-        tile.appendChild(meta);
-        wrap.appendChild(tile);
-        wrap._item = { kind: 'moods' };
-        return wrap;
+    // Home's row: one card per mood, a fan of its titles held up. OK goes straight to the spin.
+    function renderHome(row) {
+        refreshOrder();
+        row.innerHTML = '';
+        moods().forEach(function (m, i) {
+            var wrap = el('div', 'mood-tile');
+            var card = el('div', 'mood-tile-card');
+            card.style.setProperty('--mood-c', m.color);
+            var fan = el('div', 'mood-fan');
+            titlesFor(m).slice(0, 3).forEach(function (t, k, all) {
+                fan.appendChild(poster(t, 'fan fan' + (all.length === 3 ? k : k + 1)));
+            });
+            card.appendChild(fan);
+            card.appendChild(el('div', 'mood-tile-name', m.name));
+            card.appendChild(el('div', 'mood-tile-line', m.line));
+            wrap.appendChild(card);
+            wrap._item = { kind: 'mood', index: i };
+            row.appendChild(wrap);
+        });
+        return row.children.length;
     }
 
-    window.Moods = { init: init, entryTile: entryTile, titlesFor: titlesFor };
+    window.Moods = { init: init, renderHome: renderHome, titlesFor: titlesFor };
 })();

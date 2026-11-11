@@ -299,20 +299,49 @@
         });
     }
 
-    function entryTile() {
-        var wrap = el('div', 'input chess-entry');
-        var tile = el('div', 'tile');
-        var mark = el('div', 'chess-entry-helm');
-        mark.innerHTML = HELM;
-        tile.appendChild(mark);
-        var meta = el('div', 'meta');
-        meta.appendChild(el('div', 'name', 'Duel the Regent'));
-        meta.appendChild(el('div', 'port', 'Chess with the remote'));
-        tile.appendChild(meta);
-        wrap.appendChild(tile);
+    /*
+     * Home's chess row: a small tilted board showing the saved game (or the opening position),
+     * the Regent's helm with its visor glowing, and where the game stands. OK opens the game.
+     * Pieces are the same pre-rendered sprites as the full board; the visor glow is an opacity
+     * pulse on its own layer.
+     */
+    function renderTeaser(row) {
+        if (!E) return 0;
+        if (!g) load();
+        var s = g ? g.s : E.initial();
+        var html = '';
+        for (var i = 0; i < 64; i++) {
+            var p = s.board[i];
+            var at = 'left:' + (20 + (i & 7) * 50) + 'px;top:' + (20 + (i >> 3) * 50) + 'px';
+            var last = g && g.last && (g.last.from === i || g.last.to === i) ? ' ct-last' : '';
+            html += '<div class="ct-sq' + last + '" style="' + at + '">' +
+                (p ? '<img class="ct-pc" src="img/chess/' + (p === p.toLowerCase() ? 'b' : 'w') + p.toLowerCase() + '.png" alt="">' : '') +
+                '</div>';
+        }
+        var playing = g && !g.over && g.last;
+        var status = !g || !g.last ? 'He has been waiting.'
+            : g.over === 'win' ? 'You beat him last time.'
+            : g.over === 'loss' ? 'He won last time.'
+            : g.over ? 'Last game was a draw.'
+            : 'Your game is waiting.';
+        row.innerHTML = '';
+        var wrap = el('div', 'chess-teaser');
+        wrap.innerHTML =
+            '<div class="ct-card">' +
+                '<div class="ct-stage"><div class="ct-board">' + html + '</div></div>' +
+                '<div class="ct-helm">' + HELM + '<span class="ct-visor-glow"></span></div>' +
+                '<div class="ct-text">' +
+                    '<div class="ct-kicker">Chess · Level ' + (LEVELS.find(function (l) { return l.key === (g ? g.level : 'knight'); }) || LEVELS[1]).label + '</div>' +
+                    '<div class="ct-name">The Obsidian Regent</div>' +
+                    '<div class="ct-status">' + status + '</div>' +
+                    '<div class="ct-taunt">“' + line(playing ? 'move' : 'start') + '”</div>' +
+                    '<div class="ct-cta"><span class="ct-key">OK</span>' + (playing ? 'Resume the duel' : g && g.over ? 'Rematch' : 'Duel the Regent') + '</div>' +
+                '</div>' +
+            '</div>';
         wrap._item = { kind: 'chess' };
-        return wrap;
+        row.appendChild(wrap);
+        return 1;
     }
 
-    window.Chess = { init: init, entryTile: entryTile };
+    window.Chess = { init: init, renderTeaser: renderTeaser };
 })();

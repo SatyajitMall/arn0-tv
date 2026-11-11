@@ -676,6 +676,14 @@
                 ]);
             }
         });
+        entries.push({
+            label: 'Forget my habits', value: window.Usage ? Usage.count() + ' things learned on this TV' : 'Nothing learned', run: function () {
+                UI.menu('Forget what the launcher has learned?', [
+                    { label: 'Forget', run: function () { Usage.clear(); Home.render(); UI.toast('Forgotten. Learning starts again from now.'); } },
+                    { label: 'Cancel' }
+                ]);
+            }
+        });
         entries.push({ label: 'Lab', value: 'Developer tests', run: function () { UI.show('lab'); } });
         return entries;
     }
