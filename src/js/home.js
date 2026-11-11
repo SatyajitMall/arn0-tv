@@ -210,6 +210,8 @@
         });
         $('inputs-section').classList.toggle('hidden', !row2.children.length);
         $('inputs-title').textContent = consoles ? 'Tonight · Consoles' : 'Tonight';
+        var favs = window.Favourites ? Favourites.render($('fav-row')) : 0;
+        $('fav-section').classList.toggle('hidden', !favs);
         applyInputStatus();
         if (UI.isVisible('home')) UI.refresh();
     }
@@ -316,6 +318,40 @@
             if (result === 'inapp') enterTvMode();
         }).catch(function (err) {
             UI.toast('Could not switch to ' + item.label + ': ' + DevLog.errorText(err));
+        });
+    }
+
+    // Top-right Source menu: every input the TV reports, current one ticked.
+    function sourceLabel(entry) {
+        var s = entry.src;
+        if (s.type === 'TV') return 'TV';
+        var name = s.type + ' ' + s.number;
+        var named = (s.type === 'HDMI') && inputs().find(function (i) { return i.hdmi === s.number; });
+        if (named) name += ' · ' + named.label;
+        return name + (entry.connected ? '' : '  (nothing plugged in)');
+    }
+
+    function showSourceMenu() {
+        runLogged('Source list', Inputs.list()).then(function (list) {
+            var now = Inputs.current();
+            if (!list.length) { UI.toast('The TV reported no inputs'); return; }
+            UI.menu('Source', list.map(function (entry) {
+                var label = sourceLabel(entry);
+                return {
+                    label: label,
+                    checked: Inputs.same(entry.src, now),
+                    run: function () {
+                        UI.toast('Switching to ' + label.split('  (')[0] + '…');
+                        runLogged('Source ' + Inputs.describeSource(entry.src), Inputs.openSource(entry.src, cfg.inputMethod)).then(function (result) {
+                            if (result === 'inapp') enterTvMode();
+                        }).catch(function (err) {
+                            UI.toast('Could not switch: ' + DevLog.errorText(err));
+                        });
+                    }
+                };
+            }));
+        }).catch(function (err) {
+            UI.toast('Could not read inputs: ' + DevLog.errorText(err));
         });
     }
 
@@ -480,9 +516,10 @@
         UI.register('home', {
             el: $('home'),
             startRow: 1,
-            hints: [['OK', 'Open'], ['▲', 'Settings']],
+            hints: [['OK', 'Open'], ['▲', 'Source · Settings']],
             rows: function () {
-                return [[$('gear')], UI.children($('apps-row')), UI.children($('inputs-row'))];
+                return [[$('source-btn'), $('gear')], UI.children($('apps-row')), UI.children($('inputs-row')),
+                    UI.children($('fav-row'))].filter(function (r, i) { return i < 2 || r.length; });
             },
             activate: function (item) {
                 if (item.kind === 'app') launchApp(item);
@@ -491,12 +528,21 @@
                 else if (item.kind === 'moods') UI.show('moods');
                 else if (item.kind === 'chess') UI.show('chess');
                 else if (item.kind === 'settings') UI.show('settings');
+                else if (item.kind === 'source') showSourceMenu();
+                else if (item.kind === 'favourite') Favourites.activate(item);
             },
-            onFocus: function (focused) { updateDockLine(focused); },
+            onFocus: function (focused) {
+                updateDockLine(focused);
+                // The favourites row lives below the fold: Home slides up while it has focus.
+                var fav = !!(focused && focused._item && focused._item.kind === 'favourite');
+                $('home').classList.toggle('fav-up', fav);
+                if (window.Favourites) Favourites.focus(fav ? focused : null);
+            },
             // Home is the root: Back does nothing.
             onBack: function () { return true; }
         });
         $('gear')._item = { kind: 'settings' };
+        $('source-btn')._item = { kind: 'source' };
 
         UI.register('all', {
             el: $('all'),

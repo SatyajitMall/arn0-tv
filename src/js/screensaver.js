@@ -212,6 +212,9 @@
     function caption(w) {
         $('ss-title').textContent = w ? w.title : '';
         $('ss-caption').classList.toggle('hidden', !w);
+        // "Wallpaper only" hides every overlay, but never leaves a black screen: with no photo
+        // the clock comes back so the TV is not mistaken for off.
+        $('screensaver').classList.toggle('ss-bare', prefs().show === 'wallpaper' && !!w);
     }
 
     // A few pixels on each photo change, so even the text that stays put does not stay put.

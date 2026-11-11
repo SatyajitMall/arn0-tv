@@ -11,11 +11,18 @@
         <div id="bg"></div>
 
         <section id="home" class="view">
+            <div id="fav-scene" class="fav-scene"></div>
             <header class="clock">
                 <div id="time"><span id="time-main"></span><span id="time-suffix"></span></div>
                 <div id="date"></div>
                 <div id="home-weather" class="home-weather"></div>
             </header>
+            <div id="source-btn" class="gear source-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2.5" y="4" width="19" height="13" rx="2"/>
+                    <path d="M8 21h8M12 17v4M9 10.5h6M12.5 8l2.5 2.5-2.5 2.5"/>
+                </svg>
+            </div>
             <div id="gear" class="gear">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="3.2"/>
@@ -30,6 +37,10 @@
             <div id="inputs-section" class="shelf">
                 <h2 id="inputs-title">Consoles</h2>
                 <div class="row-viewport"><div id="inputs-row" class="row-track"></div></div>
+            </div>
+            <div id="fav-section" class="shelf hidden">
+                <h2>My Favourites</h2>
+                <div class="row-viewport"><div id="fav-row" class="row-track"></div></div>
             </div>
         </section>
 
@@ -235,6 +246,7 @@
     <script src="js/settings.js"></script>
     <script src="js/moods-data.js"></script>
     <script src="js/moods.js"></script>
+    <script src="js/favourites.js"></script>
     <script src="js/chess-engine.js"></script>
     <script src="js/chess.js"></script>
     <script src="js/runner-game.js"></script>

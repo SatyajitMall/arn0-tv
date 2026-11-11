@@ -29,6 +29,15 @@ window.LAUNCHER_CONFIG = {
         { hdmi: 4, label: 'Xbox Series X', brand: 'xbox' }
     ],
 
+    /*
+     * "My Favourites" row on Home (js/favourites.js). Empty hides it.
+     *   { name: 'Character', show: 'Their show', app: 'netflix',   app = key in js/moods-data.js
+     *     photo: 'img/favourites/x.jpg',   optional, your own picture, portrait ~460x600
+     *     scene: 'img/favourites/x-bg.jpg' optional, full-screen picture behind the row
+     *     color: '#hex' }                  optional, else the app's colour
+     */
+    favourites: [],
+
     // How an input tile switches the TV. See README "HDMI inputs".
     //   'switch+viewer'  set the TV source, then open Samsung's TV viewer (default)
     //   'switch'         only set the TV source

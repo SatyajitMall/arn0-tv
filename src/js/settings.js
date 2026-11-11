@@ -305,7 +305,8 @@
 
     function screensaverSummary() {
         var p = Prefs.get().screensaver;
-        return p.enabled ? 'After ' + Screensaver.delay().label : 'Off';
+        if (!p.enabled) return 'Off';
+        return 'After ' + Screensaver.delay().label + (p.show === 'wallpaper' ? ' · wallpaper only' : '');
     }
 
     /*
@@ -315,6 +316,7 @@
     function screensaverBlocks() {
         var blocks = [
             { title: 'Screen saver', key: 'enabled', options: [[true, 'On'], [false, 'Off']] },
+            { title: 'Show', key: 'show', options: [['full', 'Clock & weather'], ['wallpaper', 'Wallpaper only']] },
             { title: 'Start after', key: 'delay', options: optionPairs(Screensaver.DELAYS) }
         ];
         if (Prefs.get().wallpaper.mode === 'rotate') {

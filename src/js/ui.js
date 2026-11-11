@@ -165,8 +165,8 @@
             if (nr !== f.r) {
                 f.last[f.r] = f.c;
                 var best = 0;
-                // Leaving a single-item row (e.g. the gear) returns to where we were in the target row.
-                if (r[f.r].length === 1 && f.last[nr] !== undefined) {
+                // Leaving a single-item row or the top button row (Source, gear) returns to where we were in the target row.
+                if ((r[f.r].length === 1 || r[f.r][0].classList.contains('gear')) && f.last[nr] !== undefined) {
                     best = clamp(f.last[nr], 0, r[nr].length - 1);
                 } else {
                     var x = centerX(r[f.r][f.c]);

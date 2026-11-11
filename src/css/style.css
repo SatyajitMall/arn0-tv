@@ -355,6 +355,9 @@ h1, h2 {
     transform: scale(1.08);
 }
 
+/* Source (inputs) button, left of the gear. */
+.gear.source-btn { right: calc(var(--edge) + 96px); }
+
 /* ---------- Pages (everything except Home) ---------- */
 
 /* Static dim layer so pages stay readable over any wallpaper. */
@@ -1571,3 +1574,48 @@ html:not([data-view="home"]) #gotham-fx * { animation-play-state: paused; }
 .chess-entry .tile { background: #120d0d; border: 2px solid rgba(255, 75, 43, 0.4); }
 .chess-entry-helm { width: 80px; height: 94px; margin-right: 30px; flex: none; }
 .chess-entry-helm svg { width: 80px; height: 94px; }
+
+/* ---------- Screen saver: wallpaper only ---------- */
+/* Just the drifting picture: no scrim, caption, clock or weather. The drift still runs (burn-in). */
+#screensaver.ss-bare .ss-scrim,
+#screensaver.ss-bare .ss-caption,
+#screensaver.ss-bare .ss-clock { display: none; }
+
+/* ---------- My Favourites row ---------- */
+#fav-section { top: 1010px; }
+/* Slide Home up so the row is on screen; only transform animates. */
+#home > header, #home > .shelf, #home > .gear, #home > .dock-line {
+    transition: transform 0.35s ease-out;
+}
+#home.fav-up > header, #home.fav-up > .shelf, #home.fav-up > .gear {
+    transform: translate3d(0, -480px, 0);
+}
+.fav { flex: none; width: 230px; margin-right: 40px; }
+.fav-card {
+    position: relative;
+    width: 230px;
+    height: 300px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #1b1b1f;
+    transition: transform 0.15s ease-out;
+}
+.fav-face { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center top; }
+.fav-grey.fav-photo { filter: grayscale(1) brightness(0.8); }
+.fav-colour { opacity: 0; transition: opacity 0.4s ease-out; }
+.fav.focused .fav-colour { opacity: 1; }
+.fav.focused .fav-card { transform: scale(1.07); box-shadow: 0 0 0 5px var(--ring); }
+.fav-art { position: absolute; left: 30px; right: 30px; bottom: 0; color: rgba(0, 0, 0, 0.35); }
+.fav-art svg { display: block; width: 170px; height: 204px; }
+.fav-grey .fav-art { color: rgba(255, 255, 255, 0.08); }
+.fav-initials { position: absolute; top: 22px; left: 24px; font-size: 44px; font-weight: 800; color: rgba(255, 255, 255, 0.92); letter-spacing: 1px; }
+.fav-grey .fav-initials { color: rgba(255, 255, 255, 0.45); }
+.fav-name { margin-top: 18px; font-size: 28px; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fav-show { margin-top: 4px; font-size: 20px; color: var(--muted); opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fav.focused .fav-name { color: var(--fg); }
+/* Scene behind the row: solid colour wash, or the user's own picture. Opacity only. */
+.fav-scene {
+    position: absolute; top: 0; left: 0; width: 1920px; height: 1080px;
+    opacity: 0; transition: opacity 0.6s ease-out;
+    background-size: cover; background-position: center;
+}

@@ -75,7 +75,37 @@
         });
     }
 
+    // Any source object from sources() (TV or HDMI), same methods as open().
+    function openSource(src, method) {
+        return setSource(src).then(function () {
+            if (method === 'switch') return 'external';
+            if (method === 'inapp') return showFull().then(function () { return 'inapp'; });
+            return openViewer().then(function () { return 'external'; });
+        });
+    }
+
+    // Flat, sorted list for a picker: [{ src, connected }], TV first then HDMI by number.
+    function list() {
+        return sources().then(function (info) {
+            var out = [];
+            (info.connected || []).forEach(function (s) { out.push({ src: s, connected: true }); });
+            (info.disconnected || []).forEach(function (s) { out.push({ src: s, connected: false }); });
+            out.sort(function (a, b) {
+                var ta = a.src.type === 'TV' ? 0 : 1, tb = b.src.type === 'TV' ? 0 : 1;
+                return ta - tb || String(a.src.type).localeCompare(String(b.src.type)) || a.src.number - b.src.number;
+            });
+            return out;
+        });
+    }
+
+    function same(a, b) {
+        return !!(a && b && a.type === b.type && a.number === b.number);
+    }
+
     window.Inputs = {
+        list: list,
+        same: same,
+        openSource: openSource,
         sources: sources,
         hdmiStatus: hdmiStatus,
         current: current,
