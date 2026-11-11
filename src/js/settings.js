@@ -234,7 +234,7 @@
             w.mode = 'photo';
             w.photo = item.value === 'noir' ? Gotham.NOIR_WALLPAPER : Gotham.WALLPAPER;
             var a = Prefs.get().appearance;
-            if (item.value === 'noir') { a.effects = 'rain'; a.font = 'outfit'; }
+            if (item.value === 'noir') { a.effects = 'off'; a.font = 'outfit'; }
             else if (a.effects === 'rain') a.effects = 'searchlight';
             Wallpaper.apply();
         }

@@ -56,7 +56,7 @@ window.LAUNCHER_CONFIG = {
         apps: 'dock',
         // Starting wallpaper (key from js/wallpapers.js), or null for none (plain gradient).
         // Changed from Settings → Background; the TV remembers the choice.
-        wallpaper: 'noir'
+        wallpaper: 'storm-tower'
     },
 
     /*

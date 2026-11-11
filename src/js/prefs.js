@@ -37,8 +37,9 @@
                 names: 'always',        // app names under tiles: 'always' | 'focused' | 'never'
                 theme: theme.style || 'classic',   // see Gotham.THEMES
                 apps: theme.apps || 'tiles',        // apps row: 'tiles' | 'dock'
-                effects: theme.style === 'noir' ? 'rain' : 'searchlight',  // see Gotham.effectsFor
-                noir: true              // set once the Noir redesign has been offered (migration below)
+                effects: theme.style === 'noir' ? 'off' : 'searchlight',  // see Gotham.effectsFor
+                noir: true,             // set once the Noir redesign has been offered (migration below)
+                photos: true            // set once Noir moved to the graded photographs
             },
             home: null,                 // [{ id, label, brand }] once edited; null = config.js apps
             inputs: null                // [{ hdmi, label, brand, method, hidden }] once edited; null = config.js
@@ -62,13 +63,20 @@
                 merge(prefs.screensaver, saved.screensaver);
                 merge(prefs.appearance, saved.appearance);
                 // One-time move to the Noir redesign for TVs that were on the comic Gotham look.
+                // Noir's drawn city gave way to graded photographs.
+                if (saved.appearance && !saved.appearance.photos) {
+                    prefs.appearance.photos = true;
+                    if (prefs.wallpaper.photo === 'noir') prefs.wallpaper.photo = 'storm-tower';
+                    // Drops were drawn for the painted city; on a photograph they read as dust.
+                    if (prefs.appearance.theme === 'noir') prefs.appearance.effects = 'off';
+                }
                 if (saved.appearance && !saved.appearance.noir) {
                     prefs.appearance.noir = true;
                     if (saved.appearance.theme === 'gotham') {
                         prefs.appearance.theme = 'noir';
-                        prefs.appearance.effects = 'rain';
+                        prefs.appearance.effects = 'off';
                         prefs.appearance.font = 'outfit';
-                        if (prefs.wallpaper.photo === 'gotham') { prefs.wallpaper.mode = 'photo'; prefs.wallpaper.photo = 'noir'; }
+                        if (prefs.wallpaper.photo === 'gotham') { prefs.wallpaper.mode = 'photo'; prefs.wallpaper.photo = 'storm-tower'; }
                     }
                 }
                 if (Array.isArray(saved.home) && saved.home.length) prefs.home = saved.home;

@@ -47,6 +47,7 @@
             layer.classList.add('fav-photo');
         } else {
             layer.style.backgroundColor = grey ? '#2a2a2e' : colourOf(f);
+            if (f.art) { layer.style.backgroundImage = 'url("' + f.art + '")'; layer.classList.add('fav-art-photo'); }
             var art = el('div', 'fav-art');
             art.innerHTML = BUST;
             layer.appendChild(art);
@@ -55,7 +56,11 @@
         return layer;
     }
 
+    var MOOD = ['stone-angel', 'dark-tower', 'noir-street', 'fog-towers', 'cloud-towers', 'storm-tower'];
+
     function tile(f, i) {
+        // Your own picture if given; otherwise a graded night photo behind the initials.
+        if (!f.photo) f = { name: f.name, show: f.show, app: f.app, color: f.color, scene: f.scene, art: 'img/cards/tall/' + MOOD[i % MOOD.length] + '.jpg' };
         var wrap = el('div', 'fav');
         var card = el('div', 'fav-card');
         card.style.setProperty('--fav-c', colourOf(f));

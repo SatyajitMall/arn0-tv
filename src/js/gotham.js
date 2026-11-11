@@ -29,8 +29,16 @@
         thumb: 'img/wallpapers/thumbs/noir.jpg',
         credit: 'Original render, scripts/make-noir.mjs'
     };
+    // Licensed night photos graded into one look (scripts/grade-photos.mjs, CREDITS.md).
+    var GRADED = [
+        ['storm-tower', 'Tower in the storm'], ['fog-towers', 'Fog over the towers'],
+        ['cloud-towers', 'Low cloud'], ['fog-traffic', 'Rain traffic'], ['noir-street', 'Bridge, rain'],
+        ['stone-angel', 'Stone angel'], ['dark-tower', 'Dark tower'], ['city-aerial', 'City from above']
+    ].map(function (g) {
+        return { key: g[0], title: g[1], file: 'img/wallpapers/' + g[0] + '.jpg', thumb: 'img/wallpapers/thumbs/' + g[0] + '.jpg', credit: 'Unsplash License, see CREDITS.md' };
+    });
     window.WALLPAPERS = window.WALLPAPERS || [];
-    [WALLPAPER, NOIR_WALLPAPER].forEach(function (wp) {
+    GRADED.slice().reverse().concat([WALLPAPER, NOIR_WALLPAPER]).forEach(function (wp) {
         if (!window.WALLPAPERS.some(function (w) { return w.key === wp.key; })) window.WALLPAPERS.unshift(wp);
     });
 
@@ -105,7 +113,7 @@
         THEMES: THEMES,
         EFFECTS: EFFECTS,
         WALLPAPER: WALLPAPER.key,
-        NOIR_WALLPAPER: NOIR_WALLPAPER.key,
+        NOIR_WALLPAPER: 'storm-tower',
         // Effects offered for a theme (Settings > Appearance), or null when it has none.
         effectsFor: function (key) { return key === 'gotham' ? EFFECTS : key === 'noir' ? NOIR_EFFECTS : null; },
         theme: function (key) { return find(THEMES, key); },

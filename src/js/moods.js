@@ -71,6 +71,11 @@
         if (t.poster) {
             p.style.backgroundImage = 'url("' + t.poster + '")';
             p.classList.add('has-image');
+        } else if (document.documentElement.classList.contains('theme-noir')) {
+            // Noir: a graded night photo under the title instead of a flat colour.
+            var shots = ['noir-street', 'fog-traffic', 'dark-tower', 'fog-towers', 'cloud-towers', 'city-aerial', 'stone-angel', 'storm-tower'];
+            p.style.backgroundImage = 'url("img/cards/tall/' + shots[hue(t.title) % shots.length] + '.jpg")';
+            p.classList.add('photo-poster');
         } else {
             var h = hue(t.title);
             p.style.background = 'linear-gradient(160deg, hsl(' + h + ',45%,30%), hsl(' + ((h + 40) % 360) + ',55%,12%))';

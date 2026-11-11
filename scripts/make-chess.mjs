@@ -75,7 +75,8 @@ function piece(color, t) {
 </svg></body></html>`;
 }
 
-for (const color of ['w', 'b']) {
+// The piece sprites now come from scripts/render-chess3d.mjs (real 3D); --flat restores these.
+for (const color of process.argv.includes('--flat') ? ['w', 'b'] : []) {
     for (const t of Object.keys(ART)) {
         execFileSync('cp', [shoot(color + t, piece(color, t), 192, 240), join(out, color + t + '.png')]);
     }

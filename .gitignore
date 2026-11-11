@@ -61,3 +61,6 @@ native-snapshot.json
 .AppleDouble
 .Spotlight-V100
 .Trashes
+
+# Licensed source photos (graded copies are in src/img/wallpapers)
+art-src/

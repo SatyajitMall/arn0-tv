@@ -11,7 +11,6 @@
         <div id="bg"></div>
 
         <section id="home" class="view">
-            <div id="fav-scene" class="fav-scene"></div>
             <header class="clock">
                 <div id="greeting" class="greeting"></div>
                 <div id="time"><span id="time-main"></span><span id="time-suffix"></span></div>
@@ -43,14 +42,17 @@
                 <h2 id="inputs-title">Consoles</h2>
                 <div class="row-viewport"><div id="inputs-row" class="row-track"></div></div>
             </div>
-            <div id="shows-section" class="shelf hidden">
-                <h2>My Shows</h2>
-                <div class="row-viewport"><div id="shows-row" class="row-track"></div></div>
-            </div>
-            <div id="fav-section" class="shelf hidden">
-                <h2>My Favourites</h2>
-                <div class="row-viewport"><div id="fav-row" class="row-track"></div></div>
-            </div>
+        </section>
+
+        <section id="showspage" class="view page hidden">
+            <header class="page-head"><h1>My Shows</h1></header>
+            <div class="feature-row"><div class="row-viewport"><div id="shows-row" class="row-track"></div></div></div>
+        </section>
+
+        <section id="favspage" class="view page hidden">
+            <div id="fav-scene" class="fav-scene"></div>
+            <header class="page-head"><h1>My Favourites</h1></header>
+            <div class="feature-row"><div class="row-viewport"><div id="fav-row" class="row-track"></div></div></div>
         </section>
 
         <section id="all" class="view page hidden">

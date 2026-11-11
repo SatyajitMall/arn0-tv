@@ -21,8 +21,12 @@
         return apps[s.app] || null;
     }
 
-    function tile(s) {
+    // Without your own still, each card borrows a graded night photo, so the row is never empty boxes.
+    var MOOD = ['city-aerial', 'noir-street', 'fog-traffic', 'fog-towers', 'cloud-towers', 'dark-tower', 'storm-tower'];
+
+    function tile(s, i) {
         var app = appFor(s);
+        if (!s.image) s = { title: s.title, app: s.app, image: 'img/cards/' + MOOD[i % MOOD.length] + '.jpg' };
         var wrap = el('div', 'show');
         var card = el('div', 'show-card');
         card.style.setProperty('--show-c', (app && app.color) || '#888');
@@ -41,7 +45,7 @@
 
     function render(row) {
         row.innerHTML = '';
-        list().forEach(function (s) { row.appendChild(tile(s)); });
+        list().forEach(function (s, i) { row.appendChild(tile(s, i)); });
         return row.children.length;
     }
 

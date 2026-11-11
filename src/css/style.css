@@ -2018,3 +2018,132 @@ html.theme-noir[data-view="home"] .hints { display: none; }
     transition: opacity 0.2s ease-out;
 }
 .theme-noir .show.focused .show-card::after { opacity: 1; }
+
+/* ==========================================================================
+ * Noir v2: the screen is the photograph. Home carries a one-line clock, three quiet icons,
+ * a tagline and a row of bright logos low on the frame; shortcuts are small text pills.
+ * No boxes, no borders on Home. Pages float on the wallpaper behind a light veil.
+ * ========================================================================== */
+
+/* Clock and weather on one line, small */
+.theme-noir .clock { top: 64px; white-space: nowrap; }
+.theme-noir .greeting,
+.theme-noir #date { display: none; }
+.theme-noir #time {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 64px;
+    font-weight: 300;
+    letter-spacing: -1px;
+}
+.theme-noir #time-suffix { font-size: 26px; }
+.theme-noir .home-weather {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 6px 0 0 30px;
+    font-size: 26px;
+}
+.theme-noir .hw-item { margin-right: 22px; padding-right: 0; border-right: 0; }
+.theme-noir .hw-place { font-size: 16px; letter-spacing: 0.22em; }
+
+/* Top right: icons only */
+.theme-noir .top-actions { top: 66px; }
+.theme-noir .top-actions .gear {
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    margin-left: 14px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: rgba(238, 241, 244, 0.78);
+}
+.theme-noir .top-actions .gear svg { position: absolute; top: 14px; left: 14px; width: 28px; height: 28px; margin: 0; }
+.theme-noir .pill-label { display: none; }
+.theme-noir .top-actions .gear.focused { background: #eef1f4; color: #07080a; transform: scale(1.08); }
+
+/* Tagline + dock, low on the frame */
+.theme-noir #apps-section { top: 662px; }
+.theme-noir #home.apps-dock .dock-line {
+    top: -78px;
+    font-size: 54px;
+    font-weight: 300;
+    letter-spacing: -0.3px;
+}
+.theme-noir #home.apps-dock .app { width: 240px; margin-right: 34px; }
+.theme-noir .dock-mark,
+.theme-noir .dock-word,
+.theme-noir #home.apps-dock .all-tile svg { opacity: 0.62; }
+.theme-noir .dock-mark { top: 22%; left: 18%; width: 64%; height: 56%; }
+.theme-noir .dock-word { font-size: 44px; }
+.theme-noir #home.apps-dock .app.focused .tile { transform: scale(1.16); }
+.theme-noir .app.focused .dock-glow { opacity: 0.34; }
+.theme-noir #home.apps-dock .app .label { margin-top: 0; font-size: 17px; letter-spacing: 0.32em; }
+
+/* Shortcuts: small text pills under the dock, nothing boxed */
+.theme-noir #inputs-section { top: 950px; }
+.theme-noir #inputs-section h2 { display: none; }
+.theme-noir #inputs-row .input { width: auto; margin-right: 16px; }
+.theme-noir #inputs-row .input .tile {
+    height: 56px;
+    padding: 0 30px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 28px;
+    background: rgba(6, 8, 11, 0.42) !important;
+    box-shadow: none;
+}
+.theme-noir #inputs-row .tile::after { display: none; }
+.theme-noir #inputs-row .mood-entry-cards,
+.theme-noir #inputs-row .chess-entry-helm,
+.theme-noir #inputs-row .mark,
+.theme-noir #inputs-row .port,
+.theme-noir #inputs-row .dot { display: none; }
+.theme-noir #inputs-row .name { font-size: 22px; font-weight: 500; letter-spacing: 0.06em; color: rgba(238, 241, 244, 0.82); }
+.theme-noir #inputs-row .input.focused .tile { background: #eef1f4 !important; border-color: #eef1f4; transform: scale(1.06); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); }
+.theme-noir #inputs-row .input.focused .name { color: #07080a; }
+.theme-noir .chess-entry .tile { border-color: rgba(255, 255, 255, 0.16); }
+
+/* Pages float on the wallpaper */
+.theme-noir .page { background: rgba(3, 5, 8, 0.6); }
+.theme-noir .page-head h1 { font-size: 52px; font-weight: 300; }
+
+/* My Shows / Favourites pages */
+.feature-row { position: absolute; top: 330px; left: var(--edge); right: 0; }
+#showspage .show, #showspage .show-card { width: 560px; }
+#showspage .show-card { height: 315px; }
+#favspage .fav, #favspage .fav-card { width: 270px; }
+#favspage .fav-card { height: 352px; }
+#favspage .fav-scene { opacity: 0; }
+
+/* Favourites with a borrowed photo: grey at rest, the show's colour washes in on focus */
+.fav-art-photo { background-size: cover; background-position: center; }
+.fav-art-photo .fav-art { display: none; }
+.theme-noir .fav-face.fav-art-photo { background-color: #0c0e10 !important; }
+.fav-grey.fav-art-photo { filter: grayscale(1) brightness(0.7); }
+.theme-noir .fav-colour.fav-art-photo { box-shadow: inset 0 3px 0 var(--fav-c), inset 0 -200px 160px -80px rgba(0, 0, 0, 0.75); }
+.theme-noir .fav-initials { text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7); }
+
+/* Noir chess: the stone angel watches over the board (graded photo, CREDITS.md) */
+.theme-noir #chess {
+    background: #030507 url("../img/wallpapers/stone-angel.jpg") -190px -330px / 1500px auto no-repeat;
+}
+.theme-noir #chess::before {   /* static veil so the panel text reads */
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 1920px; height: 1080px;
+    background: rgba(3, 5, 8, 0.45);
+}
+.theme-noir .chess-backdrop { display: none; }
+.theme-noir .chess-board { box-shadow: 0 80px 160px rgba(0, 0, 0, 0.9); }
+
+.poster.photo-poster { background-size: cover; background-position: center; }
+.poster.photo-poster::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0; height: 70%;
+    border-radius: inherit;
+    background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.85));
+}
+.poster.photo-poster .poster-title,
+.poster.photo-poster .poster-app { z-index: 1; }
+.theme-noir .poster-title { font-family: "Outfit", sans-serif; font-weight: 500; letter-spacing: -0.3px; }
