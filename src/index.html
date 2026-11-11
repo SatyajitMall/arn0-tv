@@ -13,21 +13,26 @@
         <section id="home" class="view">
             <div id="fav-scene" class="fav-scene"></div>
             <header class="clock">
+                <div id="greeting" class="greeting"></div>
                 <div id="time"><span id="time-main"></span><span id="time-suffix"></span></div>
                 <div id="date"></div>
                 <div id="home-weather" class="home-weather"></div>
             </header>
+            <div class="top-actions">
             <div id="source-btn" class="gear source-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2.5" y="4" width="19" height="13" rx="2"/>
                     <path d="M8 21h8M12 17v4M9 10.5h6M12.5 8l2.5 2.5-2.5 2.5"/>
                 </svg>
+                <span class="pill-label">Inputs</span>
             </div>
             <div id="gear" class="gear">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="3.2"/>
                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                 </svg>
+                <span class="pill-label">Settings</span>
+            </div>
             </div>
             <div id="apps-section" class="shelf">
                 <h2>Apps</h2>
@@ -37,6 +42,10 @@
             <div id="inputs-section" class="shelf">
                 <h2 id="inputs-title">Consoles</h2>
                 <div class="row-viewport"><div id="inputs-row" class="row-track"></div></div>
+            </div>
+            <div id="shows-section" class="shelf hidden">
+                <h2>My Shows</h2>
+                <div class="row-viewport"><div id="shows-row" class="row-track"></div></div>
             </div>
             <div id="fav-section" class="shelf hidden">
                 <h2>My Favourites</h2>
@@ -119,6 +128,7 @@
         </section>
 
         <section id="moods" class="view page hidden">
+            <div id="mood-wash" class="mood-wash"></div>
             <header class="page-head">
                 <h1>Don’t have time to browse?</h1>
                 <div id="mood-progress"></div>
@@ -247,6 +257,7 @@
     <script src="js/moods-data.js"></script>
     <script src="js/moods.js"></script>
     <script src="js/favourites.js"></script>
+    <script src="js/shows.js"></script>
     <script src="js/chess-engine.js"></script>
     <script src="js/chess.js"></script>
     <script src="js/runner-game.js"></script>

@@ -210,6 +210,10 @@
         });
         $('inputs-section').classList.toggle('hidden', !row2.children.length);
         $('inputs-title').textContent = consoles ? 'Tonight · Consoles' : 'Tonight';
+        var shows = window.Shows ? Shows.render($('shows-row')) : 0;
+        $('shows-section').classList.toggle('hidden', !shows);
+        // Favourites sit below My Shows when there are shows, else straight under Tonight.
+        $('home').classList.toggle('has-shows', !!shows);
         var favs = window.Favourites ? Favourites.render($('fav-row')) : 0;
         $('fav-section').classList.toggle('hidden', !favs);
         applyInputStatus();
@@ -217,6 +221,17 @@
     }
 
     // The short line above the focused app in Dock style. Moved with a transform, never re-laid out.
+    // A tagline per app, picked fresh on each visit to Home (lines[]), else the single line.
+    var lineVisit = 0;
+    function pickLine(brand) {
+        if (!brand) return '';
+        var lines = brand.lines || (brand.line ? [brand.line] : []);
+        if (!lines.length) return '';
+        var k = 0;
+        for (var i = 0; i < brand.key.length; i++) k += brand.key.charCodeAt(i);
+        return lines[(k + lineVisit) % lines.length];
+    }
+
     function updateDockLine(focused) {
         var line = $('dock-line');
         if (!line) return;
@@ -226,7 +241,7 @@
             return;
         }
         var item = f._item;
-        var text = item.kind === 'all' ? 'Everything else.' : (item.brand && item.brand.line) || '';
+        var text = item.kind === 'all' ? 'Everything else.' : pickLine(item.brand);
         line.textContent = text;
         var track = f.parentNode;
         var x = f.offsetLeft - (track._pos || 0) + f.offsetWidth / 2;
@@ -433,6 +448,9 @@
     function updateClock() {
         var d = new Date();
         var t = Appearance.time(d);
+        var h = d.getHours();
+        var g = $('greeting');
+        if (g) g.textContent = h < 5 ? 'Late night' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 22 ? 'Good evening' : 'Late night';
         $('time-main').textContent = t.time;
         $('time-suffix').textContent = t.suffix;
         $('date').textContent = Appearance.date(d);
@@ -519,7 +537,7 @@
             hints: [['OK', 'Open'], ['▲', 'Source · Settings']],
             rows: function () {
                 return [[$('source-btn'), $('gear')], UI.children($('apps-row')), UI.children($('inputs-row')),
-                    UI.children($('fav-row'))].filter(function (r, i) { return i < 2 || r.length; });
+                    UI.children($('shows-row')), UI.children($('fav-row'))].filter(function (r, i) { return i < 2 || r.length; });
             },
             activate: function (item) {
                 if (item.kind === 'app') launchApp(item);
@@ -530,12 +548,20 @@
                 else if (item.kind === 'settings') UI.show('settings');
                 else if (item.kind === 'source') showSourceMenu();
                 else if (item.kind === 'favourite') Favourites.activate(item);
+                else if (item.kind === 'show') Shows.activate(item);
             },
+            onShow: function () { lineVisit++; updateDockLine(); },
             onFocus: function (focused) {
                 updateDockLine(focused);
                 // The favourites row lives below the fold: Home slides up while it has focus.
-                var fav = !!(focused && focused._item && focused._item.kind === 'favourite');
-                $('home').classList.toggle('fav-up', fav);
+                var kind = focused && focused._item && focused._item.kind;
+                var fav = kind === 'favourite';
+                // Rows below the fold: Home slides up one step for My Shows, two for Favourites
+                // (one when there are no shows).
+                var home = $('home');
+                var deep = fav && home.classList.contains('has-shows');
+                home.classList.toggle('fav-up', kind === 'show' || (fav && !deep));
+                home.classList.toggle('fav-up2', deep);
                 if (window.Favourites) Favourites.focus(fav ? focused : null);
             },
             // Home is the root: Back does nothing.

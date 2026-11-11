@@ -106,6 +106,15 @@
         return '<svg class="pc ' + (p === t ? 'pc-v' : 'pc-p') + '" viewBox="0 0 48 48">' + ART[t] + '</svg>';
     }
 
+    // On the board: carved sprites standing on a tilted board in Noir (img/chess, make-chess.mjs),
+    // the flat vector tokens elsewhere. Captured pieces always use the tokens.
+    function cellHtml(p) {
+        if (!p) return '';
+        if (!document.documentElement.classList.contains('theme-noir')) return pieceSvg(p);
+        var t = p.toLowerCase();
+        return '<img class="pc3" src="img/chess/' + (p === t ? 'b' : 'w') + t + '.png" alt="">';
+    }
+
     function build() {
         var board = $('chess-board');
         board.innerHTML = '';
@@ -116,6 +125,13 @@
             cells.push(cell);
         }
         $('chess-helm').innerHTML = HELM;
+        // Noir: the Regent looms over the far side of the board.
+        if (!$('chess-backdrop')) {
+            var back = el('div', 'chess-backdrop');
+            back.id = 'chess-backdrop';
+            back.innerHTML = HELM;
+            board.parentNode.insertBefore(back, board);
+        }
     }
 
     function render() {
@@ -125,7 +141,7 @@
         var checkSq = E.inCheck(g.s) ? b.indexOf(g.s.turn === 'w' ? 'K' : 'k') : -1;
         for (var i = 0; i < 64; i++) {
             var cell = cells[i];
-            var html = b[i] ? pieceSvg(b[i]) : '';
+            var html = cellHtml(b[i]);
             if (cell._html !== html) { cell.innerHTML = html; cell._html = html; }
             cell.classList.toggle('last', !!g.last && (g.last.from === i || g.last.to === i));
             cell.classList.toggle('held', held === i);

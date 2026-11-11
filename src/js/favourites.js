@@ -55,9 +55,11 @@
         return layer;
     }
 
-    function tile(f) {
+    function tile(f, i) {
         var wrap = el('div', 'fav');
         var card = el('div', 'fav-card');
+        card.style.setProperty('--fav-c', colourOf(f));
+        card.appendChild(el('div', 'fav-index', 'No. ' + (i < 9 ? '0' : '') + (i + 1)));
         card.appendChild(face(f, true));
         card.appendChild(face(f, false));
         wrap.appendChild(card);
@@ -69,7 +71,7 @@
 
     function render(row) {
         row.innerHTML = '';
-        list().forEach(function (f) { row.appendChild(tile(f)); });
+        list().forEach(function (f, i) { row.appendChild(tile(f, i)); });
         return row.children.length;
     }
 
@@ -89,7 +91,8 @@
             scene.style.backgroundColor = f.scene ? '#000' : colourOf(f);
             scene.classList.toggle('fav-scene-photo', !!f.scene);
         }
-        scene.style.opacity = f.scene ? '0.6' : '0.22';
+        var noir = document.documentElement.classList.contains('theme-noir');
+        scene.style.opacity = f.scene ? (noir ? '0.45' : '0.6') : (noir ? '0.1' : '0.22');
     }
 
     function activate(item) {

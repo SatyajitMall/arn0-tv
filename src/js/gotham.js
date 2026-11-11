@@ -21,14 +21,29 @@
         thumb: 'img/wallpapers/thumbs/gotham.jpg',
         credit: 'Original art, scripts/make-gotham.mjs'
     };
+    // Noir: photographic night city through rain on glass (scripts/make-noir.mjs).
+    var NOIR_WALLPAPER = {
+        key: 'noir',
+        title: 'Night city, rain',
+        file: 'img/wallpapers/noir.jpg',
+        thumb: 'img/wallpapers/thumbs/noir.jpg',
+        credit: 'Original render, scripts/make-noir.mjs'
+    };
     window.WALLPAPERS = window.WALLPAPERS || [];
-    if (!window.WALLPAPERS.some(function (w) { return w.key === WALLPAPER.key; })) {
-        window.WALLPAPERS.unshift(WALLPAPER);
-    }
+    [WALLPAPER, NOIR_WALLPAPER].forEach(function (wp) {
+        if (!window.WALLPAPERS.some(function (w) { return w.key === wp.key; })) window.WALLPAPERS.unshift(wp);
+    });
 
     var THEMES = [
-        { key: 'classic', label: 'Classic' },
-        { key: 'gotham', label: 'Gotham' }
+        { key: 'noir', label: 'Noir' },
+        { key: 'gotham', label: 'Comic' },
+        { key: 'classic', label: 'Classic' }
+    ];
+
+    // Noir's own effects: drops sliding down the glass, or nothing.
+    var NOIR_EFFECTS = [
+        { key: 'rain', label: 'Rain on glass' },
+        { key: 'off', label: 'Still' }
     ];
 
     var EFFECTS = [
@@ -58,6 +73,18 @@
         bg.parentNode.insertBefore(fx, bg.nextSibling);
     }
 
+    var noirBuilt = false;
+    function buildNoir() {
+        if (noirBuilt) return;
+        noirBuilt = true;
+        var fx = document.createElement('div');
+        fx.id = 'noir-fx';
+        // Two copies of the sparse drop layer stacked vertically, slid down as one: seamless loop.
+        fx.innerHTML = '<div class="nx-drops"><img src="img/noir/drops.png" alt=""><img src="img/noir/drops.png" alt=""></div>';
+        var bg = document.getElementById('bg');
+        bg.parentNode.insertBefore(fx, bg.nextSibling);
+    }
+
     function find(list, key) {
         return list.find(function (t) { return t.key === key; }) || list[0];
     }
@@ -65,8 +92,12 @@
     function apply(themeKey, effectsKey) {
         var root = document.documentElement;
         var on = themeKey === 'gotham';
+        var noir = themeKey === 'noir';
         if (on) build();
+        if (noir) buildNoir();
         root.classList.toggle('theme-gotham', on);
+        root.classList.toggle('theme-noir', noir);
+        root.classList.toggle('nx-rain', noir && effectsKey !== 'off');
         EFFECTS.forEach(function (e) { root.classList.toggle('gx-' + e.key, on && e.key === effectsKey); });
     }
 
@@ -74,6 +105,9 @@
         THEMES: THEMES,
         EFFECTS: EFFECTS,
         WALLPAPER: WALLPAPER.key,
+        NOIR_WALLPAPER: NOIR_WALLPAPER.key,
+        // Effects offered for a theme (Settings > Appearance), or null when it has none.
+        effectsFor: function (key) { return key === 'gotham' ? EFFECTS : key === 'noir' ? NOIR_EFFECTS : null; },
         theme: function (key) { return find(THEMES, key); },
         effects: function (key) { return find(EFFECTS, key); },
         apply: apply

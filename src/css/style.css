@@ -355,8 +355,10 @@ h1, h2 {
     transform: scale(1.08);
 }
 
-/* Source (inputs) button, left of the gear. */
-.gear.source-btn { right: calc(var(--edge) + 96px); }
+/* Top-right buttons (Inputs, Settings) sit in a row; each theme styles them. */
+.top-actions { position: absolute; top: 100px; right: var(--edge); white-space: nowrap; }
+.top-actions .gear { position: relative; top: auto; right: auto; display: inline-block; vertical-align: top; margin-left: 20px; }
+.pill-label { display: none; }
 
 /* ---------- Pages (everything except Home) ---------- */
 
@@ -1584,10 +1586,10 @@ html:not([data-view="home"]) #gotham-fx * { animation-play-state: paused; }
 /* ---------- My Favourites row ---------- */
 #fav-section { top: 1010px; }
 /* Slide Home up so the row is on screen; only transform animates. */
-#home > header, #home > .shelf, #home > .gear, #home > .dock-line {
+#home > header, #home > .shelf, #home > .top-actions {
     transition: transform 0.35s ease-out;
 }
-#home.fav-up > header, #home.fav-up > .shelf, #home.fav-up > .gear {
+#home.fav-up > header, #home.fav-up > .shelf, #home.fav-up > .top-actions {
     transform: translate3d(0, -480px, 0);
 }
 .fav { flex: none; width: 230px; margin-right: 40px; }
@@ -1619,3 +1621,400 @@ html:not([data-view="home"]) #gotham-fx * { animation-play-state: paused; }
     opacity: 0; transition: opacity 0.6s ease-out;
     background-size: cover; background-position: center;
 }
+
+/* ---------- Noir theme (js/gotham.js, art from scripts/make-noir.mjs) ----------
+ * A TV built by someone who works at night, not a TV with a costume on: photographic wallpaper,
+ * matte graphite surfaces, hairline borders, cold white type, one brass accent used sparingly.
+ * Focus is a precise reticle plus a small lift, not a coloured ring.
+ * Perf rules hold: no live gradients or blur; only transform and opacity animate. */
+
+.theme-noir {
+    --bg: #050607;
+    --fg: #eef1f4;
+    --muted: rgba(226, 231, 236, 0.5);
+    --faint: rgba(226, 231, 236, 0.4);
+    --ring: #eef1f4;
+    --nx-line: rgba(255, 255, 255, 0.10);
+    --nx-surface: rgba(9, 11, 13, 0.74);
+    --nx-brass: #c9a35a;
+    --nx-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Clock block: greeting kicker, thin numerals, telemetry-style date and weather */
+.greeting { display: none; }
+.theme-noir .clock { top: 82px; }
+.theme-noir .greeting {
+    display: block;
+    margin: 0 0 6px 4px;
+    font-family: "Outfit", sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.theme-noir #time {
+    font-family: "Outfit", sans-serif;
+    font-size: 168px;
+    font-weight: 200;
+    letter-spacing: -5px;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+}
+.theme-noir #time-suffix { font-size: 40px; font-weight: 300; letter-spacing: 0.1em; color: var(--muted); }
+.theme-noir #date {
+    margin: 10px 0 0 4px;
+    font-family: "Outfit", sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.theme-noir .home-weather { margin: 22px 0 0 4px; font-family: "Outfit", sans-serif; font-size: 24px; }
+.theme-noir .hw-item { margin-right: 34px; padding-right: 34px; border-right: 1px solid var(--nx-line); }
+.theme-noir .hw-item:last-child { border-right: 0; }
+.theme-noir .hw-icon { color: var(--fg); opacity: 0.8; width: 28px; height: 30px; }
+.theme-noir .hw-icon svg { width: 28px; height: 30px; }
+.theme-noir .hw-temp { font-weight: 400; font-variant-numeric: tabular-nums; }
+.theme-noir .hw-place { font-size: 18px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--muted); }
+
+/* Top-right pills: Inputs, Settings */
+.theme-noir .top-actions { top: 96px; }
+.theme-noir .top-actions .gear {
+    width: auto;
+    height: 58px;
+    padding: 0 26px 0 20px;
+    border-radius: 29px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(8, 10, 12, 0.6);
+    color: rgba(238, 241, 244, 0.82);
+    transition: transform 0.22s var(--nx-ease);
+}
+.theme-noir .top-actions .gear svg { position: relative; top: auto; left: auto; display: inline-block; width: 26px; height: 26px; margin-top: 15px; vertical-align: top; }
+.theme-noir .pill-label {
+    display: inline-block;
+    margin-left: 12px;
+    font-family: "Outfit", sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    line-height: 58px;
+    vertical-align: top;
+}
+.theme-noir .top-actions .gear.focused {
+    background: var(--fg);
+    border-color: var(--fg);
+    color: #07080a;
+    transform: scale(1.06);
+}
+
+/* Section headings: small caps with a hairline lead */
+.theme-noir .shelf h2 {
+    font-family: "Outfit", sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.36em;
+    color: var(--muted);
+}
+.theme-noir .shelf h2::before {
+    content: "";
+    display: inline-block;
+    width: 34px;
+    height: 1px;
+    margin: 0 16px 0 0;
+    vertical-align: middle;
+    background: rgba(255, 255, 255, 0.35);
+}
+
+/* Dock: big tagline over the row, the focused logo lit, the rest dimmed to 35% */
+.theme-noir #apps-section { top: 470px; }
+.theme-noir #inputs-section { top: 750px; }
+.theme-noir #home.apps-dock .dock-line {
+    top: -86px;
+    transform: none !important;
+    font-family: "Outfit", sans-serif;
+    font-size: 64px;
+    font-weight: 300;
+    font-style: normal;
+    letter-spacing: -0.5px;
+    color: var(--fg);
+    transition: opacity 0.22s ease-out;
+}
+.theme-noir .dock-line.visible { opacity: 0.95; }
+.theme-noir #home.apps-dock .app .tile { transition: transform 0.24s var(--nx-ease); }
+.theme-noir #home.apps-dock .app.focused .tile { transform: scale(1.18); }
+.theme-noir .dock-mark,
+.theme-noir .dock-word,
+.theme-noir #home.apps-dock .all-tile svg { opacity: 0.35; transition: opacity 0.24s ease-out; }
+.theme-noir .app.focused .dock-mark,
+.theme-noir .app.focused .dock-word,
+.theme-noir #home.apps-dock .app.focused .all-tile svg { opacity: 1; }
+.theme-noir .dock-glow { transition: opacity 0.42s ease-out; }
+.theme-noir .app.focused .dock-glow { opacity: 0.24; }
+.theme-noir #home.apps-dock .app .label {
+    margin-top: 6px;
+    font-family: "Outfit", sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+/* Cards (Tonight, consoles, favourites): matte graphite, hairline edge */
+.theme-noir .input .tile {
+    background: var(--nx-surface) !important;
+    border: 1px solid var(--nx-line);
+    border-radius: 14px;
+    box-shadow: none;
+}
+.theme-noir .input .name { font-family: "Outfit", sans-serif; font-weight: 500; letter-spacing: 0.01em; }
+.theme-noir .input .port { font-family: "Outfit", sans-serif; font-size: 21px; letter-spacing: 0.06em; color: var(--muted); }
+.theme-noir .chess-entry .tile { border-color: rgba(200, 55, 45, 0.35); }
+.theme-noir .fav-card { border-radius: 12px; border: 1px solid var(--nx-line); }
+
+/* Focus: lift, brighter edge, and the reticle (a 9-slice image, so it never stretches) */
+.theme-noir .input .tile,
+.theme-noir .fav-card { transition: transform 0.24s var(--nx-ease); }
+.theme-noir .input.focused .tile,
+.theme-noir .fav.focused .fav-card {
+    transform: scale(1.04);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 34px 70px rgba(0, 0, 0, 0.65);
+}
+.theme-noir .input .tile::after,
+.theme-noir .fav-card::after {
+    content: "";
+    position: absolute;
+    top: -14px; right: -14px; bottom: -14px; left: -14px;
+    border: 20px solid transparent;
+    border-image: url("../img/noir/reticle.svg") 20 stretch;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+    pointer-events: none;
+}
+.theme-noir .fav-card { overflow: visible; }
+.theme-noir .fav-face { border-radius: 11px; }
+.theme-noir .input.focused .tile::after,
+.theme-noir .fav.focused .fav-card::after { opacity: 1; }
+
+/* Remote hints and pages */
+.theme-noir .hints { font-family: "Outfit", sans-serif; font-size: 19px; letter-spacing: 0.08em; color: rgba(226, 231, 236, 0.45); }
+.theme-noir .hint-key { border-color: rgba(255, 255, 255, 0.2); border-radius: 6px; }
+.theme-noir .page { background: rgba(5, 6, 7, 0.9); }
+.theme-noir .page-head h1 { font-family: "Outfit", sans-serif; font-weight: 300; letter-spacing: 0.01em; }
+.theme-noir .chip.on { border-color: var(--nx-brass); }
+.theme-noir #menu-list li.focused { background: var(--fg); color: #07080a; }
+
+/* Rain on the glass: a sparse drop layer drifting down very slowly (one transform, looped) */
+#noir-fx { display: none; }
+.theme-noir #noir-fx {
+    display: block;
+    position: absolute;
+    top: 0; left: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden;
+    pointer-events: none;
+}
+.nx-drops { position: absolute; top: -1080px; left: 0; width: 1920px; height: 2160px; opacity: 0; will-change: transform; }
+.nx-drops img { display: block; width: 1920px; height: 1080px; }
+.nx-rain .nx-drops { opacity: 0.85; animation: nx-slide 90s linear infinite; }
+html:not([data-view="home"]) #noir-fx * { animation-play-state: paused; }
+@keyframes nx-slide {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(0, 1080px, 0); }
+}
+/* Noir layout rhythm: clock 82-380, tagline ~384, dock 470-720, Tonight 770-990; favourites below the fold */
+.theme-noir #home.apps-dock .dock-line { text-shadow: 0 2px 28px rgba(0, 0, 0, 0.8); font-weight: 350; }
+.theme-noir #inputs-section { top: 772px; }
+.theme-noir .input .tile { height: 160px; }
+.theme-noir #fav-section { top: 1110px; }
+.theme-noir #home.fav-up > header,
+.theme-noir #home.fav-up > .shelf,
+.theme-noir #home.fav-up > .top-actions { transform: translate3d(0, -530px, 0); }
+/* Home needs no key legend: every action is visible. Other screens keep theirs. */
+html.theme-noir[data-view="home"] .hints { display: none; }
+
+/* Noir favourites: dossier cards. Graphite, thin initials, an index, the show's colour as an edge */
+.fav-index { display: none; }
+.theme-noir .fav-index {
+    display: block;
+    position: absolute;
+    right: 18px; bottom: 16px;
+    z-index: 2;
+    font-family: "Outfit", sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    color: rgba(226, 231, 236, 0.45);
+}
+.theme-noir .fav-face:not(.fav-photo) { background-color: #0c0e10 !important; }
+.theme-noir .fav-colour:not(.fav-photo) { background-color: #14171a !important; box-shadow: inset 0 3px 0 var(--fav-c); }
+.theme-noir .fav-art { color: rgba(255, 255, 255, 0.05); }
+.theme-noir .fav-colour .fav-art { color: rgba(255, 255, 255, 0.08); }
+.theme-noir .fav-initials {
+    top: 26px; left: 22px;
+    font-family: "Outfit", sans-serif;
+    font-size: 72px;
+    font-weight: 200;
+    letter-spacing: -1px;
+    color: rgba(238, 241, 244, 0.5);
+}
+.theme-noir .fav-colour .fav-initials { color: var(--fg); }
+.theme-noir .fav-name { font-family: "Outfit", sans-serif; font-weight: 500; font-size: 26px; }
+.theme-noir .fav-show { font-family: "Outfit", sans-serif; font-size: 18px; letter-spacing: 0.06em; }
+
+/* ---------- Noir chess: a stone board tilted in 3D, carved pieces standing on it ----------
+ * Static transforms only (nothing animates in 3D); sprites and board are baked images. */
+.theme-noir #chess { perspective: 1800px; perspective-origin: 560px 260px; }
+.theme-noir .chess-board {
+    top: 96px;
+    left: 110px;
+    padding: 40px;
+    background: url("../img/chess/board.jpg") 0 0 / 880px 880px no-repeat;
+    box-shadow: 0 70px 140px rgba(0, 0, 0, 0.85);
+    transform-origin: 50% 100%;
+    transform: rotateX(36deg);
+    transform-style: preserve-3d;
+}
+.theme-noir .sq { transform-style: preserve-3d; }
+.theme-noir .sq.light,
+.theme-noir .sq.dark { background: transparent; }
+.theme-noir .chess-files { display: none; }
+.pc3 {
+    position: absolute;
+    left: 2px;
+    bottom: 34px;
+    width: 96px;
+    height: 120px;
+    transform-origin: 50% 100%;
+    transform: rotateX(-36deg);
+    pointer-events: none;
+}
+.theme-noir .sq.last { box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.07); }
+.theme-noir .sq.held { box-shadow: inset 0 0 0 100px rgba(201, 163, 90, 0.32); }
+.theme-noir .sq.check { box-shadow: inset 0 0 0 100px rgba(200, 55, 45, 0.45); }
+.theme-noir .sq.dot::after { top: 42px; left: 42px; width: 16px; height: 16px; background: rgba(238, 241, 244, 0.7); }
+.theme-noir .sq.cap::after { border: 3px solid rgba(238, 241, 244, 0.75); }
+.theme-noir .sq.cursor::before { border: 3px solid #eef1f4; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); }
+
+.theme-noir .chess-panel { top: 110px; left: 1100px; width: 700px; }
+.theme-noir .chess-kicker { font-family: "Outfit", sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.34em; }
+.theme-noir .chess-name { font-family: "Outfit", sans-serif; font-size: 56px; font-weight: 300; letter-spacing: -0.5px; color: #eef1f4; text-transform: none; }
+.theme-noir .chess-taunt {
+    font-family: "Outfit", sans-serif;
+    font-size: 30px;
+    font-weight: 300;
+    font-style: normal;
+    border-left: 2px solid #c8372d;
+    background: rgba(9, 11, 13, 0.6);
+}
+.theme-noir .chess-status { font-family: "Outfit", sans-serif; font-weight: 500; color: var(--fg); }
+.theme-noir .chess-under, .theme-noir .chess-taken { font-family: "Outfit", sans-serif; }
+.theme-noir .chess-buttons .chip.focused { box-shadow: none; background: var(--fg); color: #07080a; }
+
+.chess-backdrop { display: none; }
+.theme-noir .chess-backdrop {
+    display: block;
+    position: absolute;
+    top: -175px;
+    left: 345px;
+    width: 410px;
+    height: 478px;
+    opacity: 0.3;
+}
+.theme-noir .chess-backdrop svg { width: 410px; height: 478px; }
+.theme-noir .chess-taunt:empty { visibility: hidden; }
+.theme-noir .chess-helm path[stroke="#ffd34d"],
+.theme-noir .chess-backdrop path[stroke="#ffd34d"],
+.theme-noir .chess-entry-helm path[stroke="#ffd34d"] { stroke: #8a8f98; }
+.theme-noir .chess-board { transform: scale(1.1) rotateX(36deg); }
+
+/* ---------- Mood deck: a fan of posters on each card, the page tinted by the mood ---------- */
+.mood-wash { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; opacity: 0.1; transition: background-color 0.42s ease-out; }
+.mood-fan { position: absolute; top: 108px; left: 0; right: 0; height: 250px; }
+.poster.fan {
+    position: absolute;
+    top: 0;
+    left: 195px;
+    width: 150px;
+    height: 222px;
+    border-radius: 12px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(255, 255, 255, 0.85);
+    transform-origin: 50% 120%;
+}
+.poster.fan .poster-title { left: 14px; right: 14px; bottom: 44px; font-size: 21px; }
+.poster.fan .poster-app { left: 14px; bottom: 14px; padding: 2px 7px; border-width: 1px; border-radius: 5px; font-size: 11px; }
+.poster.fan0 { transform: translate3d(-92px, 14px, 0) rotate(-12deg); }
+.poster.fan1 { z-index: 2; }
+.poster.fan2 { transform: translate3d(92px, 14px, 0) rotate(12deg); }
+.mood-name { margin-top: 300px; font-size: 62px; }
+.mood-line { margin-top: 18px; font-size: 28px; }
+
+/* Noir deck */
+.theme-noir .mood-card {
+    background: #0d0f12;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+    border-radius: 18px;
+    box-shadow: inset 0 3px 0 var(--mood-c, #888), 0 50px 120px rgba(0, 0, 0, 0.75);
+}
+.theme-noir .mood-kicker { font-family: "Outfit", sans-serif; font-size: 18px; font-weight: 600; letter-spacing: 0.34em; }
+.theme-noir .mood-name { font-family: "Outfit", sans-serif; font-weight: 300; letter-spacing: -0.5px; color: var(--fg) !important; }
+.theme-noir .mood-line, .theme-noir .mood-count { font-family: "Outfit", sans-serif; }
+.theme-noir .poster.fan { box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.3); }
+.theme-noir .mood-side { font-family: "Outfit", sans-serif; font-size: 24px; font-weight: 500; letter-spacing: 0.34em; }
+.theme-noir .mood-yes { color: var(--fg); }
+.theme-noir .page-head h1 { font-size: 56px; }
+.mood-card { height: 690px; }
+.mood-name { margin-top: 268px; font-size: 54px; }
+.mood-line { font-size: 26px; padding-right: 10px; }
+.mood-count { bottom: 44px; }
+
+/* ---------- My Shows row ---------- */
+#shows-section { top: 1010px; }
+#home.has-shows #fav-section { top: 1440px; }
+#home.fav-up2 > header, #home.fav-up2 > .shelf, #home.fav-up2 > .top-actions { transform: translate3d(0, -910px, 0); }
+.show { flex: none; width: 480px; margin-right: 36px; }
+.show-card {
+    position: relative;
+    width: 480px;
+    height: 270px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #15181c center / cover no-repeat;
+    box-shadow: inset 0 -3px 0 var(--show-c);
+    transition: transform 0.24s ease-out;
+}
+.show-card.has-image::before {   /* static scrim so the title reads on any still */
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0; height: 60%;
+    background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.8));
+}
+.show-meta { position: absolute; left: 26px; right: 26px; bottom: 22px; }
+.show-title { font-size: 36px; font-weight: 600; line-height: 1.1; color: #fff; }
+.show-app { margin-top: 8px; font-size: 18px; letter-spacing: 0.24em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
+.show.focused .show-card { transform: scale(1.05); box-shadow: inset 0 -3px 0 var(--show-c), 0 0 0 5px var(--ring); }
+
+.theme-noir #shows-section { top: 1110px; }
+.theme-noir #home.has-shows #fav-section { top: 1530px; }
+.theme-noir #home.fav-up2 > header,
+.theme-noir #home.fav-up2 > .shelf,
+.theme-noir #home.fav-up2 > .top-actions { transform: translate3d(0, -950px, 0); }
+.theme-noir .show-card { background-color: #0d0f12; border: 1px solid var(--nx-line); border-radius: 12px; overflow: visible; }
+.theme-noir .show-card:not(.has-image) .show-title { font-family: "Outfit", sans-serif; font-weight: 300; font-size: 44px; letter-spacing: -0.5px; }
+.theme-noir .show-title { font-family: "Outfit", sans-serif; }
+.theme-noir .show-app { font-family: "Outfit", sans-serif; font-weight: 500; color: var(--muted); }
+.theme-noir .show.focused .show-card { transform: scale(1.04); border-color: rgba(255, 255, 255, 0.5); box-shadow: inset 0 -3px 0 var(--show-c), 0 34px 70px rgba(0, 0, 0, 0.65); }
+.theme-noir .show-card::after {
+    content: "";
+    position: absolute;
+    top: -14px; right: -14px; bottom: -14px; left: -14px;
+    border: 20px solid transparent;
+    border-image: url("../img/noir/reticle.svg") 20 stretch;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+}
+.theme-noir .show.focused .show-card::after { opacity: 1; }

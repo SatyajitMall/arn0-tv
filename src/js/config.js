@@ -38,6 +38,9 @@ window.LAUNCHER_CONFIG = {
      */
     favourites: [],
 
+    // "My Shows" row (js/shows.js): { title, app, image: 'img/shows/x.jpg' (your own still, 16:9) }.
+    shows: [],
+
     // How an input tile switches the TV. See README "HDMI inputs".
     //   'switch+viewer'  set the TV source, then open Samsung's TV viewer (default)
     //   'switch'         only set the TV source
@@ -47,13 +50,13 @@ window.LAUNCHER_CONFIG = {
     locale: 'en-GB',
 
     theme: {
-        // Starting look: 'classic' or 'gotham' (js/gotham.js). Changed from Settings → Appearance.
-        style: 'gotham',
+        // Starting look: 'noir', 'gotham' (comic) or 'classic' (js/gotham.js). Settings → Appearance.
+        style: 'noir',
         // Apps row: 'dock' (white logos on the wallpaper) or 'tiles' (coloured tiles).
         apps: 'dock',
         // Starting wallpaper (key from js/wallpapers.js), or null for none (plain gradient).
         // Changed from Settings → Background; the TV remembers the choice.
-        wallpaper: 'gotham'
+        wallpaper: 'noir'
     },
 
     /*

@@ -194,8 +194,9 @@
         var blocks = [
             { title: 'Theme', key: 'theme', options: Gotham.THEMES.map(function (t) { return [t.key, t.label]; }) }
         ];
-        if (Prefs.get().appearance.theme === 'gotham') {
-            blocks.push({ title: 'Effects', key: 'effects', options: Gotham.EFFECTS.map(function (e) { return [e.key, e.label]; }) });
+        var fx = Gotham.effectsFor(Prefs.get().appearance.theme);
+        if (fx) {
+            blocks.push({ title: 'Effects', key: 'effects', options: fx.map(function (e) { return [e.key, e.label]; }) });
         }
         return blocks.concat([
             { title: 'Apps', key: 'apps', options: [['dock', 'Dock'], ['tiles', 'Tiles']] },
@@ -228,10 +229,13 @@
     function activateAppearance(item) {
         Prefs.get().appearance[item.key] = item.value;
         // Picking Gotham also picks its wallpaper; Background can still change it afterwards.
-        if (item.key === 'theme' && item.value === 'gotham') {
+        if (item.key === 'theme' && (item.value === 'gotham' || item.value === 'noir')) {
             var w = Prefs.get().wallpaper;
             w.mode = 'photo';
-            w.photo = Gotham.WALLPAPER;
+            w.photo = item.value === 'noir' ? Gotham.NOIR_WALLPAPER : Gotham.WALLPAPER;
+            var a = Prefs.get().appearance;
+            if (item.value === 'noir') { a.effects = 'rain'; a.font = 'outfit'; }
+            else if (a.effects === 'rain') a.effects = 'searchlight';
             Wallpaper.apply();
         }
         Prefs.save();

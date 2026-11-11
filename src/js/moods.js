@@ -85,8 +85,16 @@
     function moodCard(m) {
         var c = el('div', 'mood-card');
         c.style.borderColor = m.color;
+        c.style.setProperty('--mood-c', m.color);
         var n = titlesFor(m).length;
         c.appendChild(el('div', 'mood-kicker', 'Tonight’s mood'));
+        // A fan of the first three titles, like a hand of cards held up.
+        var fan = el('div', 'mood-fan');
+        titlesFor(m).slice(0, 3).forEach(function (t, i, all) {
+            var p = poster(t, 'fan fan' + (all.length === 3 ? i : i + 1));
+            fan.appendChild(p);
+        });
+        c.appendChild(fan);
         var name = el('div', 'mood-name', m.name);
         name.style.color = m.color;
         c.appendChild(name);
@@ -114,6 +122,8 @@
             deck.appendChild(card);
         }
         $('mood-progress').textContent = (state.index + 1) + ' / ' + list.length;
+        var wash = $('mood-wash');
+        if (wash) wash.style.backgroundColor = list[state.index].color;
     }
 
     function topCard() {

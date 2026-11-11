@@ -7,12 +7,12 @@
  * focused logo, and the short line shown above it.
  */
 window.BRANDS = [
-    { key: 'youtube', match: /youtube|tizentube|cobalt-yt/i, mark: 'youtube', bg: '#e62117', fg: '#fff', glow: '#ff2a1f', line: 'Down the rabbit hole.' },
-    { key: 'netflix', match: /netflix/i, mark: 'netflix', bg: '#141414', fg: '#e50914', glow: '#e50914', line: 'One more episode won’t hurt.' },
-    { key: 'primevideo', match: /prime ?video/i, mark: 'primevideo', bg: 'linear-gradient(135deg,#0b4f7a,#1aa0e0)', fg: '#fff', pad: [12, 10], glow: '#1aa0e0', line: 'Your watchlist misses you.' },
+    { key: 'youtube', match: /youtube|tizentube|cobalt-yt/i, mark: 'youtube', bg: '#e62117', fg: '#fff', glow: '#ff2a1f', line: 'Down the rabbit hole.', lines: ['Down the rabbit hole.', 'One video. Then another.', 'Everything, uploaded.'] },
+    { key: 'netflix', match: /netflix/i, mark: 'netflix', bg: '#141414', fg: '#e50914', glow: '#e50914', line: 'One more episode won’t hurt.', lines: ['One more episode won’t hurt.', 'Pick up where you left off.', 'Tonight’s case file.'] },
+    { key: 'primevideo', match: /prime ?video/i, mark: 'primevideo', bg: 'linear-gradient(135deg,#0b4f7a,#1aa0e0)', fg: '#fff', pad: [12, 10], glow: '#1aa0e0', line: 'Your watchlist misses you.', lines: ['Your watchlist misses you.', 'Something premium tonight.', 'Queue up the evening.'] },
     { key: 'disneyplus', match: /disney/i, mark: 'disneyplus', bg: 'linear-gradient(135deg,#091550,#1f5bd8)', fg: '#fff' },
-    { key: 'appletv', match: /apple ?tv|aria-video/i, mark: 'appletv', bg: '#1c1c1e', fg: '#fff', glow: '#c7c7cc', line: 'Something sharp and shiny.' },
-    { key: 'spotify', match: /spotify/i, mark: 'spotify', bg: '#121212', fg: '#1ed760', glow: '#1ed760', line: 'Press play on the evening.' },
+    { key: 'appletv', match: /apple ?tv|aria-video/i, mark: 'appletv', bg: '#1c1c1e', fg: '#fff', glow: '#c7c7cc', line: 'Something sharp and shiny.', lines: ['Something sharp and shiny.', 'Quietly excellent.'] },
+    { key: 'spotify', match: /spotify/i, mark: 'spotify', bg: '#121212', fg: '#1ed760', glow: '#1ed760', line: 'Press play on the evening.', lines: ['Press play on the evening.', 'Score for a long night.', 'Volume up. Lights down.'] },
     { key: 'movistar', match: /movistar/i, mark: 'movistar', bg: '#0b6fd8', fg: '#fff' },
     { key: 'max', match: /(^|\s)max(\s|$)|hbo/i, mark: 'max', bg: '#002be7', fg: '#fff' },
     { key: 'dazn', match: /dazn/i, mark: 'dazn', bg: '#0c161c', fg: '#f8fc00' },
@@ -20,7 +20,7 @@ window.BRANDS = [
     { key: 'twitch', match: /twitch/i, mark: 'twitch', bg: '#9146ff', fg: '#fff' },
     { key: 'tf1', match: /tf1/i, text: 'TF1+', bg: 'linear-gradient(135deg,#071a4d,#1d4ed8)', fg: '#fff' },
     // India (no free marks available: typographic logos)
-    { key: 'jiohotstar', match: /hotstar/i, text: 'JioHotstar', bg: 'linear-gradient(135deg,#0c1445,#1f4bff)', fg: '#fff', glow: '#2f5bff', line: 'Cricket, drama and everything between.' },
+    { key: 'jiohotstar', match: /hotstar/i, text: 'JioHotstar', bg: 'linear-gradient(135deg,#0c1445,#1f4bff)', fg: '#fff', glow: '#2f5bff', line: 'Cricket, drama and everything between.', lines: ['Cricket, drama and everything between.', 'The match is on.'] },
     { key: 'sonyliv', match: /sonyliv/i, text: 'SonyLIV', bg: 'linear-gradient(135deg,#1a1300,#b88a00)', fg: '#fff', glow: '#e0aa00', line: 'Big stories, bigger twists.' },
     { key: 'zee5', match: /zee ?5/i, text: 'ZEE5', bg: 'linear-gradient(135deg,#2a0a45,#8230c6)', fg: '#fff', glow: '#9a3ff0', line: 'Desi nights start here.' },
     { key: 'hoichoi', match: /hoichoi/i, text: 'hoichoi', bg: 'linear-gradient(135deg,#3a0000,#e02b2b)', fg: '#fff', glow: '#ff3d3d', line: 'Ekta golpo hoye jak.' },

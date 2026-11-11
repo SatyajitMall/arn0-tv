@@ -33,11 +33,12 @@
                 clock: '24h',           // '24h' | '12h'
                 showDate: true,
                 locale: cfg.locale || 'en-GB',
-                font: 'manrope',        // see Appearance.FONTS
+                font: theme.style === 'noir' ? 'outfit' : 'manrope',   // see Appearance.FONTS
                 names: 'always',        // app names under tiles: 'always' | 'focused' | 'never'
                 theme: theme.style || 'classic',   // see Gotham.THEMES
                 apps: theme.apps || 'tiles',        // apps row: 'tiles' | 'dock'
-                effects: 'searchlight'  // Gotham only, see Gotham.EFFECTS
+                effects: theme.style === 'noir' ? 'rain' : 'searchlight',  // see Gotham.effectsFor
+                noir: true              // set once the Noir redesign has been offered (migration below)
             },
             home: null,                 // [{ id, label, brand }] once edited; null = config.js apps
             inputs: null                // [{ hdmi, label, brand, method, hidden }] once edited; null = config.js
@@ -60,6 +61,16 @@
                 merge(prefs.wallpaper, saved.wallpaper);
                 merge(prefs.screensaver, saved.screensaver);
                 merge(prefs.appearance, saved.appearance);
+                // One-time move to the Noir redesign for TVs that were on the comic Gotham look.
+                if (saved.appearance && !saved.appearance.noir) {
+                    prefs.appearance.noir = true;
+                    if (saved.appearance.theme === 'gotham') {
+                        prefs.appearance.theme = 'noir';
+                        prefs.appearance.effects = 'rain';
+                        prefs.appearance.font = 'outfit';
+                        if (prefs.wallpaper.photo === 'gotham') { prefs.wallpaper.mode = 'photo'; prefs.wallpaper.photo = 'noir'; }
+                    }
+                }
                 if (Array.isArray(saved.home) && saved.home.length) prefs.home = saved.home;
                 if (Array.isArray(saved.inputs)) prefs.inputs = saved.inputs;
             } else {
