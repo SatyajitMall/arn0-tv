@@ -203,6 +203,7 @@
         var row2 = $('inputs-row');
         row2.innerHTML = '';
         if (window.Moods) row2.appendChild(Moods.entryTile());
+        if (window.Chess) row2.appendChild(Chess.entryTile());
         var consoles = 0;
         inputs().forEach(function (input) {
             if (!input.hidden) { row2.appendChild(inputTile(input)); consoles++; }
@@ -488,6 +489,7 @@
                 else if (item.kind === 'all') UI.show('all');
                 else if (item.kind === 'input') openInput(item);
                 else if (item.kind === 'moods') UI.show('moods');
+                else if (item.kind === 'chess') UI.show('chess');
                 else if (item.kind === 'settings') UI.show('settings');
             },
             onFocus: function (focused) { updateDockLine(focused); },

@@ -135,6 +135,29 @@
             </div>
         </section>
 
+        <section id="chess" class="view page hidden">
+            <div id="chess-board" class="chess-board"></div>
+            <div class="chess-files"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+            <div class="chess-panel">
+                <div class="chess-foe">
+                    <div id="chess-helm" class="chess-helm"></div>
+                    <div>
+                        <div class="chess-kicker">Your opponent</div>
+                        <div class="chess-name">The Obsidian Regent</div>
+                    </div>
+                </div>
+                <div id="chess-taunt" class="chess-taunt"></div>
+                <div id="chess-status" class="chess-status"></div>
+                <div id="chess-under" class="chess-under"></div>
+                <div class="chess-taken"><span>Taken by the Regent</span><div id="chess-taken-v"></div></div>
+                <div class="chess-taken"><span>Taken by you</span><div id="chess-taken-p"></div></div>
+                <div class="chess-buttons">
+                    <div id="chess-new" class="chip">New game</div>
+                    <div id="chess-level" class="chip">Level</div>
+                </div>
+            </div>
+        </section>
+
         <section id="screensaver-settings" class="view page hidden">
             <header class="page-head"><h1>Screen saver</h1></header>
             <div id="screensaver-body" class="settings-body compact"></div>
@@ -212,6 +235,8 @@
     <script src="js/settings.js"></script>
     <script src="js/moods-data.js"></script>
     <script src="js/moods.js"></script>
+    <script src="js/chess-engine.js"></script>
+    <script src="js/chess.js"></script>
     <script src="js/runner-game.js"></script>
     <script src="js/boot.js"></script>
 </body>
