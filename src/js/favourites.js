@@ -118,7 +118,8 @@
         }
         if (window.Usage) Usage.record('favourite', f.name);
         UI.toast('Opening ' + app.label + (f.show ? ': search “' + f.show + '”' : ''));
-        Apps.launch(app.id).catch(function (err) {
+        if (f.show && window.Watch) Watch.pin(f.show, f.app);
+        Apps.launch(app.id, f.show).catch(function (err) {
             UI.toast('Could not open ' + app.label + ': ' + DevLog.errorText(err));
         });
     }

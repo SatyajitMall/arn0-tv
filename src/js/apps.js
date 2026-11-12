@@ -39,8 +39,10 @@
         }), 8000, 'App list');
     }
 
-    function launch(appId) {
+    // title: the show a card opened, so Continue can remember it (js/watch.js).
+    function launch(appId, title) {
         if (window.Usage) Usage.record('app', appId);
+        if (window.Watch) Watch.launched(appId, title);
         return withTimeout(new Promise(function (resolve, reject) {
             tizen.application.launch(appId, resolve, reject);
         }), 8000, 'Launch');

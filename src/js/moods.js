@@ -278,7 +278,8 @@
         state.mode = 'deck';
         if (window.Usage) Usage.record('pick', t.title);
         UI.toast('Opening ' + app.label + ': search “' + t.title + '”');
-        Apps.launch(app.id).catch(function (err) {
+        if (window.Watch) Watch.pin(t.title, t.app);
+        Apps.launch(app.id, t.title).catch(function (err) {
             UI.toast('Could not open ' + app.label + ': ' + DevLog.errorText(err));
         });
         // Come back to a fresh deck next time.

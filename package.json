@@ -9,7 +9,8 @@
     "devlog": "node scripts/devlog-server.mjs",
     "icon": "node scripts/make-icon.mjs",
     "fetch-assets": "node scripts/fetch-assets.mjs",
-    "catalog": "node scripts/fetch-catalog.mjs"
+    "catalog": "node scripts/fetch-catalog.mjs",
+    "import-netflix": "node scripts/import-netflix.mjs"
   },
   "devDependencies": {
     "three": "^0.170.0"

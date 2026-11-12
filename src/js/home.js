@@ -201,6 +201,7 @@
         updateDockLine();
 
         // Below the first screen, each feature is a row of its own; Down scrolls to it.
+        section('continue-section', window.Shows ? Shows.renderContinue($('continue-row')) : 0);
         section('shows-section', window.Shows ? Shows.render($('shows-row')) : 0);
         section('favs-section', window.Favourites ? Favourites.render($('fav-row')) : 0);
         section('moods-section', window.Moods ? Moods.renderHome($('moods-row')) : 0);
@@ -214,6 +215,12 @@
         section('inputs-section', row2.children.length);
 
         applyInputStatus();
+        if (UI.isVisible('home')) UI.refresh();
+    }
+
+    function renderContinue() {
+        if (!window.Shows) return;
+        section('continue-section', Shows.renderContinue($('continue-row')));
         if (UI.isVisible('home')) UI.refresh();
     }
 
@@ -311,7 +318,11 @@
         var actions = [
             { label: 'Send installed app list to log', run: labDumpApps },
             { label: 'Read inputs', run: labReadInputs },
-            { label: 'Open Samsung TV viewer only', run: function () { runLogged('Open TV viewer', Inputs.openViewer()); } }
+            { label: 'Open Samsung TV viewer only', run: function () { runLogged('Open TV viewer', Inputs.openViewer()); } },
+            { label: 'Watch: what the TV reports about other apps', run: function () {
+                if (!window.Watch) return;
+                Watch.probe().then(function (lines) { lines.forEach(function (l) { log('watch probe: ' + l); }); });
+            } }
         ];
         if (window.Sound) actions = actions.concat(Sound.actions());
         if (window.Weather) actions = actions.concat(Weather.actions());
@@ -435,6 +446,14 @@
 
     // Colour keys are hidden shortcuts; everything is also reachable from Settings.
     function colourKey(k, view) {
+        var f = document.querySelector('#continue-row .focused');
+        if ((k === KEY.RED || k === KEY.R) && view === 'home' && f && f._item) {
+            // Red on a Continue card takes it off the row (until you open that show again).
+            Watch.unpin(f._item.show.title);
+            UI.toast('Removed ' + f._item.show.title + ' from Continue');
+            renderHome();
+            return true;
+        }
         if (k === KEY.RED || k === KEY.R) {
             UI.show(view === 'all' ? 'home' : 'all');
         } else if (k === KEY.GREEN || k === KEY.G) {
@@ -567,7 +586,7 @@
             hints: [['OK', 'Open'], ['▲', 'Source · Settings']],
             rows: function () {
                 return [[$('source-btn'), $('gear')], UI.children($('apps-row'))].concat(
-                    ['shows-row', 'fav-row', 'moods-row', 'chess-row', 'inputs-row'].map(function (id) { return UI.children($(id)); })
+                    ['continue-row', 'shows-row', 'fav-row', 'moods-row', 'chess-row', 'inputs-row'].map(function (id) { return UI.children($(id)); })
                 ).filter(function (r, i) { return i < 2 || r.length; });
             },
             activate: function (item) {
@@ -577,7 +596,7 @@
                 else if (item.kind === 'moods') UI.show('moods');
                 else if (item.kind === 'chess') UI.show('chess');
                 else if (item.kind === 'mood') UI.show('moods', { start: item.index });
-                else if (item.kind === 'show') Shows.activate(item);
+                else if (item.kind === 'show' || item.kind === 'continue') Shows.activate(item);
                 else if (item.kind === 'favourite') Favourites.activate(item);
                 else if (item.kind === 'settings') UI.show('settings');
                 else if (item.kind === 'source') showSourceMenu();
@@ -588,6 +607,8 @@
                 updateDockLine();
                 // Coming back from a game: show where it stands now.
                 if (opts.back && window.Chess) Chess.renderTeaser($('chess-row'));
+                // Coming back from an app: what you just watched moves to the front of Continue.
+                if (!opts.back) renderContinue();
             },
             onFocus: function (focused) {
                 updateDockLine(focused);
@@ -620,6 +641,7 @@
         registerKeys();
         registerViews();
         UI.setColourKey(colourKey);
+        if (window.Watch) Watch.init();
         UI.setKeyHook(function (k) {
             if (state.tvMode) {
                 if (k === KEY.BACK || k === KEY.ESC || k === KEY.BACKSPACE) exitTvMode();
@@ -651,6 +673,7 @@
             }
             updateClock();
             refreshInputStatus();
+            if (UI.isVisible('home')) renderContinue();
             if (UI.isVisible('home')) { Wallpaper.homeShown(); if (window.Weather) Weather.refresh(); }
             if (Date.now() - state.lastFetch > REFRESH_AFTER_MS) setTimeout(loadApps, 1500);
         });

@@ -2234,6 +2234,18 @@ html.theme-noir, .theme-noir body { background-color: #060918; }
 /* My Shows and Favourites at Home size */
 #home .show, #home .show-card { width: 560px; }
 #home .show-card { height: 315px; }
+/* Continue: the episode above the title, "Prime Video · Last night" below */
+.show-ep {
+    margin-bottom: 6px;
+    font-family: "Outfit", sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: rgba(190, 205, 255, 0.92);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 #home .fav, #home .fav-card { width: 250px; }
 #home .fav { margin-right: 34px; }
 #home .fav-card { height: 330px; }

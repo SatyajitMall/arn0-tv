@@ -36,6 +36,10 @@ src/js/config.local.js
 src/js/catalog.local.js
 src/img/catalog/
 
+# Your viewing history (scripts/import-netflix.mjs): personal, never pushed
+src/js/history.local.js
+imports/
+
 # native helper build output (device-specific; build it yourself)
 native/**/bin/
 native/**/obj/

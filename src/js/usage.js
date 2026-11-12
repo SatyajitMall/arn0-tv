@@ -1,7 +1,7 @@
 /*
- * Learns your habits from what you do in this launcher, and nothing else: which apps you open
- * and when, which moods you say yes or no to, which shows and favourites you pick. The TV gives
- * a web app no access to watch history inside Netflix and the rest, so this is the signal there is.
+ * Learns your habits: which apps you open and when, how long you stay in them (js/watch.js),
+ * which moods you say yes or no to, which shows and favourites you pick. The TV gives a web app
+ * no access to watch history inside Netflix and the rest; js/watch.js adds what can be had.
  *
  * Kept on the TV (localStorage, the last MAX events). Settings > Advanced > Forget my habits clears it.
  *
@@ -35,9 +35,12 @@
         try { localStorage.setItem(STORE, JSON.stringify(events)); } catch (e) { /* learning just pauses */ }
     }
 
-    function record(kind, id) {
+    // w: optional weight (js/watch.js gives long viewing sessions more than a quick look).
+    function record(kind, id, w) {
         if (!id) return;
-        events.push({ t: Date.now(), k: kind, id: String(id) });
+        var e = { t: Date.now(), k: kind, id: String(id) };
+        if (w && w !== 1) e.w = Math.round(w * 100) / 100;
+        events.push(e);
         if (events.length > MAX) events = events.slice(-MAX);
         save();
     }
@@ -63,7 +66,7 @@
             var dh = Math.abs(hours(d) - h);
             dh = Math.min(dh, 24 - dh);
             var tod = Math.exp(-(dh * dh) / (2 * SIGMA_H * SIGMA_H));
-            s += Math.pow(0.5, age / HALF_LIFE) * (0.25 + 0.75 * tod) * (weekend(d) === we ? 1 : 0.6);
+            s += (e.w || 1) * Math.pow(0.5, age / HALF_LIFE) * (0.25 + 0.75 * tod) * (weekend(d) === we ? 1 : 0.6);
         }
         return s;
     }
@@ -75,13 +78,14 @@
             .map(function (x) { return x.item; });
     }
 
-    // The app you usually open around now, if the habit is strong enough to act on.
+    // The app you usually open around now, if the habit is strong enough to act on. Counts both
+    // launches from here and viewing sessions the TV reported (js/watch.js).
     var USUAL = 1.2;
     function usualApp(ids, now) {
         var best = null;
         var bestScore = USUAL;
         ids.forEach(function (id) {
-            var s = score('app', id, now);
+            var s = score('app', id, now) + score('watch', id, now);
             if (s > bestScore) { best = id; bestScore = s; }
         });
         return best;

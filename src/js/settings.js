@@ -679,7 +679,7 @@
         entries.push({
             label: 'Forget my habits', value: window.Usage ? Usage.count() + ' things learned on this TV' : 'Nothing learned', run: function () {
                 UI.menu('Forget what the launcher has learned?', [
-                    { label: 'Forget', run: function () { Usage.clear(); Home.render(); UI.toast('Forgotten. Learning starts again from now.'); } },
+                    { label: 'Forget', run: function () { Usage.clear(); if (window.Watch) Watch.clear(); Home.render(); UI.toast('Forgotten. Learning starts again from now.'); } },
                     { label: 'Cancel' }
                 ]);
             }

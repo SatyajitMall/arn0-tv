@@ -1,5 +1,6 @@
 // Fetches real artwork and Indian streaming availability from TMDB for every title the launcher
-// knows: My Shows and Favourites (src/js/config.local.js) and the mood deck (src/js/moods-data.js).
+// knows: My Shows and Favourites (src/js/config.local.js), the mood deck (src/js/moods-data.js)
+// and your imported viewing history (src/js/history.local.js).
 //
 //   posters    img/catalog/p-<slug>.jpg   342 wide, for mood cards
 //   backdrops  img/catalog/b-<slug>.jpg   780 wide, for My Shows and favourite scenes
@@ -82,7 +83,7 @@ const slug = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').re
 // Read the launcher's own data files the way the TV does.
 const sandbox = { window: {} };
 vm.createContext(sandbox);
-for (const f of ['src/js/config.local.js', 'src/js/moods-data.js']) {
+for (const f of ['src/js/config.local.js', 'src/js/moods-data.js', 'src/js/history.local.js']) {
     const file = join(root, f);
     if (existsSync(file)) vm.runInContext(readFileSync(file, 'utf8'), sandbox, { filename: f });
 }
@@ -124,6 +125,10 @@ const titles = new Set();
 (local.shows || []).forEach((s) => titles.add(s.title));
 (local.favourites || []).forEach((f) => f.show && titles.add(f.show));
 moodData.moods.forEach((m) => (m.titles || []).forEach((t) => titles.add(t.title)));
+// Imported Netflix history (scripts/import-netflix.mjs): the 30 most recent series feed Continue
+// and My Shows. Their app stays Netflix; TMDB only supplies the artwork.
+const history = (sandbox.window.WATCH_HISTORY || { shows: [] }).shows;
+history.filter((s) => s.type !== 'film').slice(0, 30).forEach((s) => titles.add(s.title));
 
 const found = {};
 for (const title of titles) {

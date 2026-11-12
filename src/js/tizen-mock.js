@@ -56,6 +56,9 @@
                 }
                 later(ok);
             },
+            // Preview: no other apps run, so the listener never fires (Watch falls back to resume timing).
+            addAppStatusChangeListener: function () { return 1; },
+            getAppsContext: function (ok) { later(function () { ok([{ id: '1', appId: 'Arn0Lnchr0.Launcher' }]); }); },
             getCurrentApplication: function () {
                 return { appInfo: { id: 'Arn0Lnchr0.Launcher' }, exit: function () {}, hide: function () {} };
             }
